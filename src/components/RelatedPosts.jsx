@@ -1,6 +1,6 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { Link } from 'react-router-dom'
-import { fetchRelatedPosts } from '../lib/posts'
+import { usePublishedPosts, relatedFromList } from '../lib/posts'
 import PostCard from './PostCard'
 
 const PAGE_SIZE = 4
@@ -8,23 +8,13 @@ const PAGE_SIZE = 4
 // "More in <category>", full width, 4 cards per row. With more than 4 posts,
 // it becomes a carousel that pages through 4 at a time.
 export default function RelatedPosts({ post, limit = 8 }) {
-  const [posts, setPosts] = useState([])
-  const [loading, setLoading] = useState(true)
+  const { posts: all, loading } = usePublishedPosts()
+  const posts = useMemo(() => relatedFromList(post, all, limit), [post?.id, all, limit])
   const [page, setPage] = useState(0)
 
   useEffect(() => {
-    let alive = true
-    setLoading(true)
-    fetchRelatedPosts(post, limit).then((rows) => {
-      if (!alive) return
-      setPosts(rows)
-      setPage(0)
-      setLoading(false)
-    })
-    return () => {
-      alive = false
-    }
-  }, [post?.id, limit])
+    setPage(0)
+  }, [post?.id])
 
   if (loading || posts.length === 0) return null
 

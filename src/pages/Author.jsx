@@ -1,22 +1,17 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useMemo } from 'react'
 import { useParams, Link } from 'react-router-dom'
-import { fetchPublishedPosts } from '../lib/posts'
+import { usePublishedPosts } from '../lib/posts'
 import PostCard from '../components/PostCard'
 import AuthorAvatar from '../components/AuthorAvatar'
 import { SITE, authorBio } from '../lib/siteConfig'
 
 export default function Author() {
   const { name } = useParams()
-  const [posts, setPosts] = useState([])
-  const [loading, setLoading] = useState(true)
+  const { posts: all, loading } = usePublishedPosts()
+  const posts = useMemo(() => all.filter((p) => (p.author || '').trim() === name), [all, name])
 
   useEffect(() => {
     document.title = `${name} — ${SITE.name}`
-    setLoading(true)
-    fetchPublishedPosts().then((data) => {
-      setPosts(data.filter((p) => (p.author || '').trim() === name))
-      setLoading(false)
-    })
   }, [name])
 
   return (

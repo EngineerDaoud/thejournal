@@ -10,11 +10,19 @@ import { useEffect, useRef, useState } from 'react'
 // Pass `images` (an array) for posts with several covers: with more than one
 // image the card becomes a small carousel (arrows, dots, swipe, auto-play).
 // A single image just renders as a plain image, no controls.
-function Slide({ src }) {
+function Slide({ src, eager }) {
   return (
     <>
-      <img className="cover-frame-bg" src={src} alt="" aria-hidden="true" loading="lazy" />
-      <img className="cover-frame-img" src={src} alt="" loading="lazy" draggable={false} />
+      <img className="cover-frame-bg" src={src} alt="" aria-hidden="true" loading="lazy" decoding="async" />
+      <img
+        className="cover-frame-img"
+        src={src}
+        alt=""
+        loading={eager ? 'eager' : 'lazy'}
+        fetchpriority={eager ? 'high' : undefined}
+        decoding="async"
+        draggable={false}
+      />
     </>
   )
 }
@@ -29,6 +37,7 @@ export default function CoverImage({
   autoPlay = true,
   interval = 4500,
   fill = false,
+  eager = false,
 }) {
   const list = images && images.length ? images : src ? [src] : []
   const count = list.length
@@ -60,7 +69,7 @@ export default function CoverImage({
   if (count === 1) {
     return (
       <div className={`cover-frame${fillClass}`} style={frameStyle}>
-        <Slide src={list[0]} />
+        <Slide src={list[0]} eager={eager} />
         {children}
       </div>
     )
@@ -95,7 +104,7 @@ export default function CoverImage({
       <div className="cover-track" style={{ transform: `translateX(-${index * 100}%)` }}>
         {list.map((url, i) => (
           <div className="cover-slide" key={`${url}-${i}`}>
-            <Slide src={url} />
+            <Slide src={url} eager={eager && i === 0} />
           </div>
         ))}
       </div>

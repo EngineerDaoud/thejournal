@@ -1,6 +1,7 @@
 import { Link } from 'react-router-dom'
 import { parseCovers } from '../lib/covers'
 import CoverImage from './CoverImage'
+import { prefetchPost } from '../lib/posts'
 
 export function formatViews(n) {
   const v = Number(n) || 0
@@ -30,7 +31,12 @@ export default function TrendingCard({ post, rank }) {
   )
 
   return (
-    <Link to={`/blog/${post.slug}`} className="ov-card ov-small trend-card">
+    <Link
+      to={`/blog/${post.slug}`}
+      className="ov-card ov-small trend-card"
+      onMouseEnter={() => prefetchPost(post.slug)}
+      onTouchStart={() => prefetchPost(post.slug)}
+    >
       {covers.length > 0 ? (
         <CoverImage images={covers} ratio="16 / 10" radius={14} fill>
           {overlay}

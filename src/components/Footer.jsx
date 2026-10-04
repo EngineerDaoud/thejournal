@@ -1,10 +1,10 @@
 import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
-import { loadCategoryTree, catLink } from '../lib/categories'
+import { loadCategoryTree, getCachedCategoryTree, catLink } from '../lib/categories'
 import { SITE } from '../lib/siteConfig'
 
 export default function Footer() {
-  const [tree, setTree] = useState([])
+  const [tree, setTree] = useState(() => getCachedCategoryTree() || [])
 
   useEffect(() => {
     loadCategoryTree().then(setTree)

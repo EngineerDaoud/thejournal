@@ -6,6 +6,9 @@ import Footer from './components/Footer'
 import ProtectedRoute from './components/ProtectedRoute'
 
 import Landing from './pages/Landing'
+import PageSkeleton from './components/PageSkeleton'
+import { whenIdle } from './lib/cache'
+import { fetchPublishedPosts } from './lib/posts'
 
 // Every page except the home page is loaded on demand, so a visitor only
 // downloads the code for the page they open (the admin editor is the heaviest).
@@ -26,6 +29,18 @@ const AdminCategories = lazy(() => import('./pages/AdminCategories'))
 const AdminComments = lazy(() => import('./pages/AdminComments'))
 const NotFound = lazy(() => import('./pages/NotFound'))
 
+// Once the home page has appeared, the other public pages are downloaded quietly in the
+// background, so clicking a link opens the next page at once instead of waiting for its code.
+// (The admin pages are left out on purpose: normal visitors never need them.)
+function warmUp() {
+  fetchPublishedPosts()
+  import('./pages/BlogPost')
+  import('./pages/Blog')
+  import('./pages/Author')
+  import('./pages/About')
+  import('./pages/Contact')
+}
+
 // A single-page site keeps the old scroll position when the page changes, so a
 // link clicked in the footer would open the new page scrolled to the bottom.
 // This puts every newly opened page back at the very top. (The browser's Back
@@ -43,12 +58,16 @@ function ScrollToTop() {
 }
 
 export default function App() {
+  useEffect(() => {
+    whenIdle(warmUp)
+  }, [])
+
   return (
     <AuthProvider>
       <ScrollToTop />
       <Navbar />
       <main style={{ minHeight: '60vh' }}>
-        <Suspense fallback={<div className="container" style={{ paddingTop: 60 }}>Loading...</div>}>
+        <Suspense fallback={<PageSkeleton />}>
         <Routes>
           <Route path="/" element={<Landing />} />
           <Route path="/blog" element={<Blog />} />

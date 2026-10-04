@@ -2,6 +2,7 @@ import { Link } from 'react-router-dom'
 import { parseCovers } from '../lib/covers'
 import CoverImage from './CoverImage'
 import AuthorAvatar from './AuthorAvatar'
+import { prefetchPost } from '../lib/posts'
 
 // Card with the text written on top of the picture (dark see-through fade at the bottom).
 // size: 'large' (main post) | 'normal' (grid) | 'small' (side / related)
@@ -37,9 +38,15 @@ export default function PostCard({ post, size = 'normal', ratio }) {
   )
 
   return (
-    <Link to={`/blog/${post.slug}`} className={`ov-card ov-${size}`} style={{ display: 'block' }}>
+    <Link
+      to={`/blog/${post.slug}`}
+      className={`ov-card ov-${size}`}
+      style={{ display: 'block' }}
+      onMouseEnter={() => prefetchPost(post.slug)}
+      onTouchStart={() => prefetchPost(post.slug)}
+    >
       {covers.length > 0 ? (
-        <CoverImage images={covers} ratio={ratio || RATIOS[size] || RATIOS.normal} radius={16} fill>
+        <CoverImage images={covers} ratio={ratio || RATIOS[size] || RATIOS.normal} radius={16} fill eager={size === 'large'}>
           {overlay}
         </CoverImage>
       ) : (

@@ -2034,3 +2034,45 @@ a.underline-link:hover,
 }
 .dd-group { padding: 8px 12px 4px; font-size: 11px; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; color: var(--color-ink-soft); }
 .dd-group:first-child { padding-top: 4px; }
+
+/* ================= Loading placeholders (replace the plain "Loading..." text) ================= */
+.skel {
+  background: linear-gradient(90deg, #E7E4DC 25%, #EFEDE6 50%, #E7E4DC 75%);
+  background-size: 200% 100%;
+  animation: skel-shimmer 1.4s ease-in-out infinite;
+  border-radius: 14px;
+}
+.skel-line { height: 18px; border-radius: 6px; }
+.skel-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 22px; }
+.skel-card { aspect-ratio: 16 / 10; }
+@media (max-width: 900px) { .skel-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (max-width: 560px) { .skel-grid { grid-template-columns: minmax(0, 1fr); } .skel-card:nth-child(n+3) { display: none; } }
+@keyframes skel-shimmer { to { background-position: -200% 0; } }
+@media (prefers-reduced-motion: reduce) { .skel { animation: none; } }
+
+
+/* ================= Phone polish (added) ================= */
+/* Off-screen parts are not painted until the visitor scrolls near them: faster first paint on phones. */
+.related, .site-footer { content-visibility: auto; contain-intrinsic-size: auto 480px; }
+
+/* 1fr can grow wider than the screen when a child is wide; minmax(0, 1fr) cannot. */
+@media (max-width: 900px) {
+  .hero-row-3 { grid-template-columns: minmax(0, 1fr); gap: 26px; }
+  .hero-center { order: -1; }          /* featured story first, then Trending, then Latest */
+  .hero-center .ov-card .cover-frame { min-height: 0; }
+}
+@media (max-width: 720px) {
+  .hero-latest-item { margin: 0; padding: 14px 0; }   /* no sideways overflow from the negative margin */
+  .hero-center .ov-large .ov-title { font-size: 22px; }
+  .hero-center .ov-large .ov-content { padding: 16px; padding-right: 52px; }
+  .post-layout { padding-top: 32px !important; padding-bottom: 56px !important; }
+  .post-layout h1 { overflow-wrap: anywhere; }
+  /* tables / code never push the page sideways: they scroll inside their own box */
+  .post-main table, .post-main pre { display: block; max-width: 100%; overflow-x: auto; -webkit-overflow-scrolling: touch; }
+  .post-main iframe, .post-main video { width: 100%; height: auto; aspect-ratio: 16 / 9; }
+  .cover-arrow { opacity: 1; }                           /* no hover on phones: keep the arrows visible */
+}
+@media (max-width: 480px) {
+  h1 { font-size: clamp(26px, 8vw, 32px); }
+  .related-head { flex-wrap: wrap; gap: 6px; }
+}

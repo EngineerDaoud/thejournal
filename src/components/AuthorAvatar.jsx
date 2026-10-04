@@ -1,11 +1,11 @@
 import { useEffect, useState } from 'react'
-import { loadAuthorAvatars } from '../lib/authors'
+import { loadAuthorAvatars, getCachedAvatars } from '../lib/authors'
 import { authorInitial } from '../lib/siteConfig'
 
 // Drop-in replacement for the plain-initial circle: shows the picture that was
 // saved for this author name in the admin editor, or the initial if none was set.
 export default function AuthorAvatar({ name, size = 'normal' }) {
-  const [avatarUrl, setAvatarUrl] = useState(null)
+  const [avatarUrl, setAvatarUrl] = useState(() => getCachedAvatars()?.[name] || null)
 
   useEffect(() => {
     let alive = true

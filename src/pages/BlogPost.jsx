@@ -1,6 +1,5 @@
 import { useEffect, useState } from 'react'
 import { useParams, Link } from 'react-router-dom'
-import { supabase } from '../lib/supabaseClient'
 import PostRenderer from '../components/PostRenderer'
 import AdSlot from '../components/AdSlot'
 import { useAuth } from '../context/AuthContext'
@@ -8,7 +7,8 @@ import RichText from '../components/RichText'
 import Carousel from '../components/Carousel'
 import { parseCovers } from '../lib/covers'
 import AuthorBox from '../components/AuthorBox'
-import { trackView } from '../lib/posts'
+import { trackView, fetchPostBySlug, getCachedPost } from '../lib/posts'
+import PageSkeleton from '../components/PageSkeleton'
 import CommentForm from '../components/CommentForm'
 import CommentsPanel from '../components/CommentsPanel'
 import RelatedPosts from '../components/RelatedPosts'
@@ -19,45 +19,48 @@ const BADGE = { display: 'inline-block', fontSize: 13, fontWeight: 600, lineHeig
 
 export default function BlogPost() {
   const { slug } = useParams()
-  const [post, setPost] = useState(null)
-  const [status, setStatus] = useState('loading')
+  const [fetched, setFetched] = useState(null) // { slug, post | null }
   const [commentKey, setCommentKey] = useState(0)
   const { isAdmin, loading: authLoading } = useAuth()
 
+  // The post is requested straight away (it no longer waits for the sign-in check), and a post
+  // that was already opened or hovered before shows at once from the cache.
   useEffect(() => {
-    if (authLoading) return
-    // Drafts are only returned to the admin (Supabase RLS), and we double check here.
-    supabase
-      .from('posts')
-      .select('*')
-      .eq('slug', slug)
-      .single()
-      .then(({ data, error }) => {
-        if (error || !data || (!data.published && !isAdmin)) {
-          setStatus('not-found')
-          return
-        }
-        setPost(data)
-        setStatus('ready')
-        document.title = `${data.title} — The Journal`
+    let alive = true
+    fetchPostBySlug(slug).then((data) => {
+      if (alive) setFetched({ slug, post: data })
+    })
+    return () => {
+      alive = false
+    }
+  }, [slug])
 
-        // Count the view: published posts only, not the admin, once per browser session.
-        if (data.published && !isAdmin) {
-          try {
-            const key = `viewed:${data.slug}`
-            if (!sessionStorage.getItem(key)) {
-              sessionStorage.setItem(key, '1')
-              trackView(data.slug)
-            }
-          } catch (e) {
-            trackView(data.slug)
-          }
-        }
-      })
-  }, [slug, isAdmin, authLoading])
+  const fresh = fetched && fetched.slug === slug ? fetched : null
+  const post = fresh ? fresh.post : getCachedPost(slug)
+  // Drafts are only returned to the admin (Supabase RLS), and we double check here.
+  const hidden = post && !post.published && !isAdmin
+  const status = hidden ? (authLoading ? 'loading' : 'not-found') : post ? 'ready' : fresh ? 'not-found' : 'loading'
+
+  useEffect(() => {
+    if (post && status === 'ready') document.title = `${post.title} — The Journal`
+  }, [post?.id, status])
+
+  // Count the view: published posts only, not the admin, once per browser session.
+  useEffect(() => {
+    if (!post || !post.published || authLoading || isAdmin) return
+    try {
+      const key = `viewed:${post.slug}`
+      if (!sessionStorage.getItem(key)) {
+        sessionStorage.setItem(key, '1')
+        trackView(post.slug)
+      }
+    } catch (e) {
+      trackView(post.slug)
+    }
+  }, [post?.id, isAdmin, authLoading])
 
   if (status === 'loading') {
-    return <div className="measure" style={{ paddingTop: 60 }}>Loading...</div>
+    return <PageSkeleton />
   }
 
   if (status === 'not-found') {

@@ -1,49 +1,41 @@
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useMemo } from 'react'
 import { useSearchParams } from 'react-router-dom'
-import { fetchPublishedPosts, sortByViews } from '../lib/posts'
+import { fetchPublishedPosts, usePublishedPosts, sortByViews } from '../lib/posts'
 import { supabase } from '../lib/supabaseClient'
 import PostCard from '../components/PostCard'
 import TrendingCard from '../components/TrendingCard'
 import AdSlot from '../components/AdSlot'
+import PageSkeleton from '../components/PageSkeleton'
 import PostGrid from '../components/PostGrid'
 
 export default function Blog() {
-  const [posts, setPosts] = useState([])
-  const [loading, setLoading] = useState(true)
+  const { posts, loading } = usePublishedPosts()
   const [searchParams, setSearchParams] = useSearchParams()
   const activeCategory = searchParams.get('category') || 'All'
   const activeSub = searchParams.get('sub') || ''
 
   useEffect(() => {
     document.title = 'Blog — The Journal'
-    let alive = true
-    const load = () =>
-      fetchPublishedPosts().then((data) => {
-        if (!alive) return
-        setPosts(data)
-        setLoading(false)
-      })
-    load()
 
-    // Live counts: reload when a post is added / edited / published / deleted
-    // (Supabase realtime), and also every 30s + when the tab is focused again,
-    // so the numbers stay right even if realtime is not enabled on the table.
+    // Live counts: when a post is added / edited / published / deleted (Supabase realtime)
+    // the list is refreshed. The list is shared, so every part of the page updates by itself.
+    // No more 30-second polling: it only re-asks when the tab is focused again, and the
+    // cache skips the request if the data is less than a minute old.
     let channel = null
     try {
       channel = supabase
         .channel('blog-posts-live')
-        .on('postgres_changes', { event: '*', schema: 'public', table: 'posts' }, load)
+        .on('postgres_changes', { event: '*', schema: 'public', table: 'posts' }, () =>
+          fetchPublishedPosts({ force: true })
+        )
         .subscribe()
     } catch (e) {
       channel = null
     }
-    const timer = setInterval(load, 30000)
-    const onFocus = () => load()
+    const onFocus = () => fetchPublishedPosts()
     window.addEventListener('focus', onFocus)
 
     return () => {
-      alive = false
-      clearInterval(timer)
       window.removeEventListener('focus', onFocus)
       if (channel) supabase.removeChannel(channel)
     }
@@ -174,7 +166,7 @@ export default function Blog() {
         </div>
       )}
 
-      {loading && <p style={{ color: 'var(--color-ink-soft)' }}>Loading entries...</p>}
+      {loading && <PageSkeleton inline />}
 
       {!loading && filtered.length === 0 && (
         <p style={{ color: 'var(--color-ink-soft)' }}>Nothing here yet.</p>

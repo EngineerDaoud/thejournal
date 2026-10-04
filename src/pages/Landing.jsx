@@ -1,6 +1,7 @@
-import { useEffect, useState } from 'react'
+import { useEffect } from 'react'
 import { Link } from 'react-router-dom'
-import { fetchPublishedPosts } from '../lib/posts'
+import { usePublishedPosts, prefetchPost } from '../lib/posts'
+import PageSkeleton from '../components/PageSkeleton'
 import PostCard from '../components/PostCard'
 import AdSlot from '../components/AdSlot'
 import PostGrid from '../components/PostGrid'
@@ -8,20 +9,13 @@ import AuthorAvatar from '../components/AuthorAvatar'
 import { SITE } from '../lib/siteConfig'
 
 export default function Landing() {
-  const [posts, setPosts] = useState([])
-  const [loading, setLoading] = useState(true)
+  const { posts, loading } = usePublishedPosts()
 
   useEffect(() => {
     document.title = `${SITE.name} — ${SITE.tagline}`
-    fetchPublishedPosts().then((data) => {
-      setPosts(data)
-      setLoading(false)
-    })
   }, [])
 
-  if (loading) {
-    return <div className="container" style={{ paddingTop: 60 }}>Loading...</div>
-  }
+  if (loading) return <PageSkeleton />
 
   if (posts.length === 0) {
     return (
@@ -65,7 +59,13 @@ export default function Landing() {
             <h2 className="hero-panel-title">Latest</h2>
             <div className="hero-latest-box">
               {latestList.map((post) => (
-                <Link key={post.id} to={`/blog/${post.slug}`} className="latest-item hero-latest-item">
+                <Link
+                  key={post.id}
+                  to={`/blog/${post.slug}`}
+                  className="latest-item hero-latest-item"
+                  onMouseEnter={() => prefetchPost(post.slug)}
+                  onTouchStart={() => prefetchPost(post.slug)}
+                >
                   <div className="latest-item-title">{post.title}</div>
                   <div className="hero-latest-date">
                     {new Date(post.created_at).toLocaleDateString(undefined, {

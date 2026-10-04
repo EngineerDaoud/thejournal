@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 import { Link, useLocation, useNavigate } from 'react-router-dom'
-import { loadCategoryTree, catLink, subLink } from '../lib/categories'
+import { loadCategoryTree, getCachedCategoryTree, catLink, subLink } from '../lib/categories'
 import { useAuth } from '../context/AuthContext'
 import AdminLoginModal from './AdminLoginModal'
 
@@ -8,7 +8,7 @@ export default function Navbar() {
   const location = useLocation()
   const navigate = useNavigate()
   const { isAdmin } = useAuth()
-  const [tree, setTree] = useState([])
+  const [tree, setTree] = useState(() => getCachedCategoryTree() || [])
   const [menuOpen, setMenuOpen] = useState(false)
   const [dropOpen, setDropOpen] = useState(false)
   const [loginOpen, setLoginOpen] = useState(false)

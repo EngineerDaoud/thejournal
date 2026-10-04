@@ -1,4 +1,5 @@
 import { supabase } from './supabaseClient'
+import { readStored, writeStored } from './cache'
 
 // Builds [{ name, children: [name, ...] }] from the categories table.
 // If the table is empty (or not created yet) it falls back to the categories
@@ -30,15 +31,30 @@ async function fetchCategoryTree() {
 }
 
 // The navbar and the footer both need the tree; share one request between them.
+// The last result is also kept in the browser, so the menu appears instantly on the next visit.
+const KEY = 'journal:cats:v1'
+const FRESH_MS = 5 * 60 * 1000
 let cache = null
 let cachedAt = 0
+let tree = readStored(KEY)?.data || null
+
+export function getCachedCategoryTree() {
+  return tree
+}
+
 export function loadCategoryTree() {
-  if (!cache || Date.now() - cachedAt > 60_000) {
+  if (!cache || Date.now() - cachedAt > FRESH_MS) {
     cachedAt = Date.now()
-    cache = fetchCategoryTree().catch(() => {
-      cache = null
-      return []
-    })
+    cache = fetchCategoryTree()
+      .then((t) => {
+        tree = t
+        writeStored(KEY, t)
+        return t
+      })
+      .catch(() => {
+        cache = null
+        return tree || []
+      })
   }
   return cache
 }

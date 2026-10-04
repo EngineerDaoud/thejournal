@@ -1,9 +1,18 @@
 import { supabase } from './supabaseClient'
+import { readStored, writeStored } from './cache'
 
 // One request shared by every AuthorAvatar on a page (Blog list, an article's
 // AuthorBox, the Author page) instead of one query per avatar.
+const KEY = 'journal:authors:v1'
+const FRESH_MS = 5 * 60 * 1000
 let cache = null
 let cachedAt = 0
+let known = readStored(KEY)?.data || null
+
+// Instant (no network): the pictures we already know about.
+export function getCachedAvatars() {
+  return known
+}
 
 async function fetchAll() {
   const { data, error } = await supabase.from('authors').select('name, avatar_url')
@@ -14,11 +23,13 @@ async function fetchAll() {
   }
   const map = {}
   for (const row of data || []) map[row.name] = row.avatar_url
+  known = map
+  writeStored(KEY, map)
   return map
 }
 
 export function loadAuthorAvatars() {
-  if (!cache || Date.now() - cachedAt > 30_000) {
+  if (!cache || Date.now() - cachedAt > FRESH_MS) {
     cachedAt = Date.now()
     cache = fetchAll().catch(() => {
       cache = null
@@ -30,6 +41,12 @@ export function loadAuthorAvatars() {
 
 function bustCache() {
   cache = null
+  known = null
+  try {
+    localStorage.removeItem(KEY)
+  } catch {
+    /* ignore */
+  }
 }
 
 /**

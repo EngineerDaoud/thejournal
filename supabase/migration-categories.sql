@@ -23,15 +23,15 @@ using (true);
 
 create policy "Admin can insert categories"
 on categories for insert
-with check (auth.jwt() ->> 'email' = 'muhammaddaoud207@gmail.com');
+with check (auth.jwt() ->> 'email' = 'muhammaddaoudqadir@gmail.com');
 
 create policy "Admin can update categories"
 on categories for update
-using (auth.jwt() ->> 'email' = 'muhammaddaoud207@gmail.com');
+using (auth.jwt() ->> 'email' = 'muhammaddaoudqadir@gmail.com');
 
 create policy "Admin can delete categories"
 on categories for delete
-using (auth.jwt() ->> 'email' = 'muhammaddaoud207@gmail.com');
+using (auth.jwt() ->> 'email' = 'muhammaddaoudqadir@gmail.com');
 
 -- Bring in the categories your posts already use.
 insert into categories (name)

@@ -17,8 +17,8 @@ using (true);
 
 create policy "Admin can add author pictures"
 on authors for insert
-with check (auth.jwt() ->> 'email' = 'muhammaddaoud207@gmail.com');
+with check (auth.jwt() ->> 'email' = 'muhammaddaoudqadir@gmail.com');
 
 create policy "Admin can update author pictures"
 on authors for update
-using (auth.jwt() ->> 'email' = 'muhammaddaoud207@gmail.com');
+using (auth.jwt() ->> 'email' = 'muhammaddaoudqadir@gmail.com');

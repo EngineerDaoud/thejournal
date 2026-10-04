@@ -35,12 +35,12 @@ using (approved = true);
 -- You (the admin) can see every comment, including the pending ones.
 create policy "Admin can read all comments"
 on comments for select
-using (auth.jwt() ->> 'email' = 'muhammaddaoud207@gmail.com');
+using (auth.jwt() ->> 'email' = 'muhammaddaoudqadir@gmail.com');
 
 create policy "Admin can update comments"
 on comments for update
-using (auth.jwt() ->> 'email' = 'muhammaddaoud207@gmail.com');
+using (auth.jwt() ->> 'email' = 'muhammaddaoudqadir@gmail.com');
 
 create policy "Admin can delete comments"
 on comments for delete
-using (auth.jwt() ->> 'email' = 'muhammaddaoud207@gmail.com');
+using (auth.jwt() ->> 'email' = 'muhammaddaoudqadir@gmail.com');

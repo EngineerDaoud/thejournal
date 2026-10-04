@@ -7,6 +7,7 @@ import Dropdown from '../components/Dropdown'
 import { parseCovers, serializeCovers } from '../lib/covers'
 import AuthorAvatarPicker from '../components/AuthorAvatarPicker'
 import KeywordsInput from '../components/KeywordsInput'
+import { splitKeywords, joinKeywords } from '../lib/keywords'
 import { imagePath } from '../lib/upload'
 const MAX_COVERS = 4
 
@@ -27,7 +28,8 @@ export default function AdminEditor() {
   const [title, setTitle] = useState('')
   const [slug, setSlug] = useState('')
   const [excerpt, setExcerpt] = useState('')
-  const [keywords, setKeywords] = useState([])
+  const [primaryKw, setPrimaryKw] = useState([])
+  const [secondaryKw, setSecondaryKw] = useState([])
   const [tldr, setTldr] = useState('')
   const [ctaText, setCtaText] = useState('')
   const [ctaLink, setCtaLink] = useState('')
@@ -135,7 +137,11 @@ export default function AdminEditor() {
         setTitle(data.title)
         setSlug(data.slug)
         setExcerpt(data.excerpt || '')
-        setKeywords(data.keywords || [])
+        {
+          const kw = splitKeywords(data.keywords || [])
+          setPrimaryKw(kw.primary)
+          setSecondaryKw(kw.secondary)
+        }
         setTldr(data.tldr || '')
         setCtaText(data.cta_text || '')
         setCtaLink(data.cta_link || '')
@@ -318,7 +324,7 @@ export default function AdminEditor() {
       title: title.trim(),
       slug: slug.trim(),
       excerpt: excerpt.trim(),
-      keywords,
+      keywords: joinKeywords(primaryKw, secondaryKw),
       tldr: tldr.trim() || null,
       cta_text: ctaText.trim() || null,
       cta_link: ctaLink.trim() || null,
@@ -703,9 +709,27 @@ export default function AdminEditor() {
             )}
           </div>
 
-          <div className="field">
+          <div className="field kw-admin">
             <label htmlFor="keywords">Keywords</label>
-            <KeywordsInput value={keywords} onChange={setKeywords} />
+            <div className="kw-admin-box">
+              <div className="kw-admin-row">
+                <div className="kw-admin-name">Primary</div>
+                <KeywordsInput
+                  value={primaryKw}
+                  onChange={setPrimaryKw}
+                 
+                />
+              </div>
+              <div className="kw-admin-row">
+                <div className="kw-admin-name">Secondary</div>
+                <KeywordsInput
+                  value={secondaryKw}
+                  onChange={setSecondaryKw}
+                
+                />
+              </div>
+  
+            </div>
           </div>
         </div>
 

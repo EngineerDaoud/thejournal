@@ -128,7 +128,6 @@ export default function BlogPost() {
         </div>
         <h1 style={{ fontSize: 'clamp(30px, 5vw, 42px)', marginBottom: 24 }}>{post.title}</h1>
 
-        <PostKeywords keywords={post.keywords} />
       </header>
       <div className="post-main">
         <article>
@@ -186,6 +185,7 @@ export default function BlogPost() {
       <aside className="post-side">
         <CommentForm post={post} onSent={() => setCommentKey((k) => k + 1)} />
         <CommentsPanel postId={post.id} refreshKey={commentKey} />
+        <PostKeywords keywords={post.keywords} />
         <AdSlot label="Advertisement" />
       </aside>
     </div>

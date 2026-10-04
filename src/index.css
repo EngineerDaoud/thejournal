@@ -2089,3 +2089,59 @@ a.underline-link:hover,
   .ov-title { line-height: 1.28; }
   .ov-card .ov-shade { background: linear-gradient(to top, rgba(0,0,0,0.82) 0%, rgba(0,0,0,0.55) 45%, rgba(0,0,0,0) 80%); }
 }
+
+
+/* ================= Keywords: black box under the comments (blog post, right column) ================= */
+.kw-box {
+  background: #000;
+  color: #fff;
+  border-radius: 14px;
+  padding: 20px 20px 22px;
+}
+.kw-title {
+  margin: 0 0 14px;
+  font-family: var(--font-display);
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #fff;
+}
+.kw-label {
+  margin: 14px 0 8px;
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.6);
+}
+.kw-title + .kw-label { margin-top: 0; }
+.kw-list { display: flex; flex-wrap: wrap; gap: 8px; }
+.kw-pill {
+  display: inline-block;
+  padding: 4px 12px;
+  border-radius: 999px;
+  border: 1.5px solid rgba(255, 255, 255, 0.75);
+  color: #fff;
+  font-size: 13px;
+  line-height: 1.4;
+  overflow-wrap: anywhere;
+}
+.kw-pill-primary { background: #fff; border-color: #fff; color: #000; font-weight: 600; }
+
+/* ---- Keywords section in the admin editor ---- */
+.kw-admin-box {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  padding: 14px;
+  border: 1px solid var(--color-line);
+  border-radius: var(--radius-md);
+}
+.kw-admin-name {
+  margin-bottom: 6px;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--color-ink-soft);
+}

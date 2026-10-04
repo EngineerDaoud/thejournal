@@ -2076,3 +2076,16 @@ a.underline-link:hover,
   h1 { font-size: clamp(26px, 8vw, 32px); }
   .related-head { flex-wrap: wrap; gap: 6px; }
 }
+
+
+/* ================= Gap between the story cards and the Categories / Trending boxes (phone + tablet) ================= */
+@media (max-width: 1099px) {
+  .grid-with-rails.has-rails .grid-rail { margin-top: 48px; }
+  .grid-rail-right .cat-rail { gap: 28px; }          /* space between Categories and Trending topics */
+}
+@media (max-width: 720px) {
+  /* a little more room under the card text and a slightly stronger fade, so long titles stay readable */
+  .ov-card:not(.trend-card) .ov-content { padding-bottom: 18px; }
+  .ov-title { line-height: 1.28; }
+  .ov-card .ov-shade { background: linear-gradient(to top, rgba(0,0,0,0.82) 0%, rgba(0,0,0,0.55) 45%, rgba(0,0,0,0) 80%); }
+}

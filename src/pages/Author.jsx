@@ -19,7 +19,7 @@ export default function Author() {
       <div className="author-head">
         <AuthorAvatar name={name} size="large" />
         <div>
-          <div className="blog-side-title" style={{ border: 0, padding: 0, marginBottom: 4 }}>Author</div>
+          <div className="Articles-side-title" style={{ border: 0, padding: 0, marginBottom: 4 }}>Author</div>
           <h1 style={{ margin: '0 0 8px' }}>{name}</h1>
           <p style={{ margin: 0, color: 'var(--color-ink-soft)', maxWidth: 620 }}>{authorBio(name)}</p>
         </div>
@@ -29,7 +29,7 @@ export default function Author() {
 
       {!loading && posts.length === 0 && (
         <p style={{ color: 'var(--color-ink-soft)' }}>
-          No published posts by this author yet. <Link className="underline-link" to="/blog">Browse the blog</Link>
+          No published posts by this author yet. <Link className="underline-link" to="/blog">Browse the Articles</Link>
         </p>
       )}
 

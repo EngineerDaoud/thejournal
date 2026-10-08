@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { fetchAllComments, setCommentApproved, deleteComment } from '../lib/comments'
 import AdminAvatar from '../components/AdminAvatar'
+import { confirmDialog } from '../components/ConfirmDialog'
 
 export default function AdminComments() {
   const [comments, setComments] = useState([])
@@ -25,7 +26,14 @@ export default function AdminComments() {
   }
 
   async function remove(id) {
-    if (!confirm('Delete this comment? This cannot be undone.')) return
+    const ok = await confirmDialog({
+      title: 'Delete this comment?',
+      message: 'This comment will be deleted for good. This cannot be undone.',
+      confirmText: 'Delete',
+      cancelText: 'Cancel',
+      danger: true,
+    })
+    if (!ok) return
     await deleteComment(id)
     load()
   }
@@ -47,7 +55,7 @@ export default function AdminComments() {
       </div>
 
       <p style={{ color: 'var(--color-ink-soft)', fontSize: 14, marginBottom: 26 }}>
-        A comment only appears on the blog after you approve it here.
+        A comment only appears on the site after you approve it here.
       </p>
 
       <div style={{ display: 'flex', gap: 8, marginBottom: 20, flexWrap: 'wrap' }}>

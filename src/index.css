@@ -72,7 +72,7 @@ img { max-width: 100%; display: block; }
   margin: 0 auto;
   padding: 0 24px;
 }
-/* Wide layout: uses almost the whole screen width (navbar, footer, home, blog, author) */
+/* Wide layout: uses almost the whole screen width (navbar, footer, home, Articles, author) */
 .container.container-wide {
   max-width: 1840px;
   padding: 0 clamp(16px, 2.6vw, 48px);
@@ -381,7 +381,7 @@ select:focus { border-color: var(--color-accent); box-shadow: 0 0 0 3px var(--co
   .cover-excerpt-row { grid-template-columns: minmax(0, 1fr); }
 }
 
-/* the row of small buttons that picks "Paste your blog" / "Custom blog" */
+/* the row of small buttons that picks "Paste your Articles" / "Custom Articles" */
 .mode-switch {
   display: inline-flex;
   gap: 6px;
@@ -616,21 +616,21 @@ select:focus { border-color: var(--color-accent); box-shadow: 0 0 0 3px var(--co
   border-radius: var(--radius-md);
   white-space: nowrap;
 }
-/* ================= Blog page: Latest in the middle, Trending on the sides ================= */
-.blog-hero {
+/* ================= Articlepage: Latest in the middle, Trending on the sides ================= */
+.Articles-hero {
   display: grid;
   grid-template-columns: minmax(0, 1fr);
   gap: 36px;
   align-items: start;
 }
-.blog-hero.has-left { grid-template-columns: minmax(240px, 1fr) minmax(0, 2fr); }
-.blog-hero.has-right { grid-template-columns: minmax(0, 2fr) minmax(240px, 1fr); }
-.blog-hero.has-left.has-right { grid-template-columns: minmax(240px, 1fr) minmax(0, 2fr) minmax(240px, 1fr); }
+.Articles-hero.has-left { grid-template-columns: minmax(240px, 1fr) minmax(0, 2fr); }
+.Articles-hero.has-right { grid-template-columns: minmax(0, 2fr) minmax(240px, 1fr); }
+.Articles-hero.has-left.has-right { grid-template-columns: minmax(240px, 1fr) minmax(0, 2fr) minmax(240px, 1fr); }
 
-.blog-hero-main { min-width: 0; }
-.blog-hero-side { min-width: 0; display: flex; flex-direction: column; gap: 22px; }
+.Articles-hero-main { min-width: 0; }
+.Articles-hero-side { min-width: 0; display: flex; flex-direction: column; gap: 22px; }
 
-.blog-side-title {
+.Articles-side-title {
   font-size: 12px;
   font-weight: 600;
   letter-spacing: 0.08em;
@@ -639,8 +639,8 @@ select:focus { border-color: var(--color-accent); box-shadow: 0 0 0 3px var(--co
   padding-bottom: 8px;
   border-bottom: 1px solid var(--color-line);
 }
-.blog-hero-side .blog-side-title { margin-bottom: -4px; }
-.blog-hero-main .blog-side-title { margin-bottom: 18px; }
+.Articles-hero-side .Articles-side-title { margin-bottom: -4px; }
+.Articles-hero-main .Articles-side-title { margin-bottom: 18px; }
 
 .trend-card { display: block; }
 .trend-rank {
@@ -675,22 +675,22 @@ select:focus { border-color: var(--color-accent); box-shadow: 0 0 0 3px var(--co
 
 /* Tablet / phone: featured post first, then the trending posts in a row/grid below it. */
 @media (max-width: 1100px) {
-  .blog-hero,
-  .blog-hero.has-left,
-  .blog-hero.has-right,
-  .blog-hero.has-left.has-right { grid-template-columns: minmax(0, 1fr); gap: 34px; }
-  .blog-hero-main { order: 1; }
-  .blog-hero-left { order: 2; }
-  .blog-hero-right { order: 3; }
-  .blog-hero-side {
+  .Articles-hero,
+  .Articles-hero.has-left,
+  .Articles-hero.has-right,
+  .Articles-hero.has-left.has-right { grid-template-columns: minmax(0, 1fr); gap: 34px; }
+  .Articles-hero-main { order: 1; }
+  .Articles-hero-left { order: 2; }
+  .Articles-hero-right { order: 3; }
+  .Articles-hero-side {
     display: grid;
     grid-template-columns: repeat(3, minmax(0, 1fr));
     gap: 20px;
   }
-  .blog-hero-side .blog-side-title { grid-column: 1 / -1; margin-bottom: 0; }
+  .Articles-hero-side .Articles-side-title { grid-column: 1 / -1; margin-bottom: 0; }
 }
 @media (max-width: 620px) {
-  .blog-hero-side { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .Articles-hero-side { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 }
 
 /* ================= Cover image frame: fixed 16:9 shape, image never cropped ================= */
@@ -989,7 +989,7 @@ a:hover .cat-pill {
   .author-head { flex-direction: column; align-items: flex-start; }
   .author-box { padding: 18px; gap: 14px; }
 }
-/* ================= Blog post: article on the left, comments on the right ================= */
+/* ================= Articlepost: article on the left, comments on the right ================= */
 .post-layout {
   max-width: 1140px;
   margin: 0 auto;
@@ -1708,42 +1708,42 @@ a:hover .cat-pill {
 }
 
 
-/* ================= Blog page: 2 posts under the Latest card, 4 per row below ================= */
-.blog-hero-below {
+/* ================= Articlepage: 2 posts under the Latest card, 4 per row below ================= */
+.Articles-hero-below {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 22px;
   margin-top: 22px;
 }
 @media (max-width: 560px) {
-  .blog-hero-below { grid-template-columns: minmax(0, 1fr); }
+  .Articles-hero-below { grid-template-columns: minmax(0, 1fr); }
 }
 @media (min-width: 1101px) {
   .card-grid-3.card-grid-4 { grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 22px; }
 }
 
 
-/* ===== Blog hero (desktop): bottom of the middle column lines up exactly with the side columns =====
+/* ===== Articlehero (desktop): bottom of the middle column lines up exactly with the side columns =====
    Left/right columns = 3 cards. Middle = Latest card (as tall as the first 2 side cards)
    + 2 small cards on the same row as the 3rd side card. */
 @media (min-width: 1101px) {
-  .blog-hero.has-left,
-  .blog-hero.has-right { align-items: stretch; }
-  .blog-hero.has-left .blog-hero-main,
-  .blog-hero.has-right .blog-hero-main { display: flex; flex-direction: column; }
-  .blog-hero-main > .ov-large {
+  .Articles-hero.has-left,
+  .Articles-hero.has-right { align-items: stretch; }
+  .Articles-hero.has-left .Articles-hero-main,
+  .Articles-hero.has-right .Articles-hero-main { display: flex; flex-direction: column; }
+  .Articles-hero-main > .ov-large {
     flex: 1;
     min-height: 0;
     display: flex !important;
     flex-direction: column;
   }
-  .blog-hero-main > .ov-large .cover-frame {
+  .Articles-hero-main > .ov-large .cover-frame {
     flex: 1;
     height: auto;
     aspect-ratio: auto !important;
     min-height: 320px;
   }
-  .blog-hero-below { flex: none; }
+  .Articles-hero-below { flex: none; }
 }
 
 
@@ -1793,7 +1793,7 @@ img { height: auto; }
     padding-left: max(16px, env(safe-area-inset-left));
     padding-right: max(16px, env(safe-area-inset-right));
   }
-  .blog-hero-side { gap: 14px; }
+  .Articles-hero-side { gap: 14px; }
   .related-grid { gap: 22px; }
 }
 
@@ -1804,7 +1804,7 @@ img { height: auto; }
   .btn-danger:hover,
   .mode-btn:hover,
   .cat-rail-tag:hover,
-  .nav-blog-btn:hover { transform: none; }
+  .nav-Articles-btn:hover { transform: none; }
 }
 
 /* ================= Phones: card text must never be cut or hidden =================
@@ -1893,7 +1893,7 @@ img { height: auto; }
   .post-side { grid-row: 3; margin-top: 44px; }
 }
 
-/* ================= Blog post: sections add no box and no side line ================= */
+/* ================= Articlepost: sections add no box and no side line ================= */
 .post-section { display: contents; }
 
 .comment-scroll .comment-carousel { margin-top: 14px; }
@@ -2091,7 +2091,7 @@ a.underline-link:hover,
 }
 
 
-/* ================= Keywords: black box under the comments (blog post, right column) ================= */
+/* ================= Keywords: black box under the comments (Articlepost, right column) ================= */
 .kw-box {
   background: #000;
   color: #fff;

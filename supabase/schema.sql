@@ -1,5 +1,5 @@
 -- Run once in Supabase: Dashboard -> SQL Editor -> New query -> paste -> Run.
--- Adds a view counter so the Blog page can show the most-viewed (trending) posts.
+-- Adds a view counter so the Articlepage can show the most-viewed (trending) posts.
 
 alter table posts add column if not exists views integer not null default 0;
 

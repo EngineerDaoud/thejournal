@@ -33,7 +33,7 @@ export default function RelatedPosts({ post, limit = 8 }) {
   return (
     <section className="related" aria-label="Related posts">
       <div className="related-head">
-        <h2 className="blog-side-title" style={{ border: 0, padding: 0, margin: 0 }}>
+        <h2 className="Articles-side-title" style={{ border: 0, padding: 0, margin: 0 }}>
           More in {category}
         </h2>
         <Link

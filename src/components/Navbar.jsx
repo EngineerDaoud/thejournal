@@ -53,7 +53,7 @@ export default function Navbar() {
         style={{ position: 'relative', display: 'flex', alignItems: 'center', height: 76 }}
       >
         <div
-          className="nav-blog-btn"
+          className="nav-Articles-btn"
           style={{
             display: 'inline-flex',
             alignItems: 'center',
@@ -65,7 +65,7 @@ export default function Navbar() {
           }}
         >
           <Link to="/blog" style={{ ...linkStyle(isActive('/blog')), borderBottom: 'none', padding: 0, lineHeight: 1 }}>
-            Blog
+            Articles
           </Link>
           {tree.length > 0 && (
             <button
@@ -115,7 +115,7 @@ export default function Navbar() {
 
   const mobileLinks = (
     <>
-      <Link to="/blog" style={linkStyle(isActive('/blog'))}>Blog</Link>
+      <Link to="/blog" style={linkStyle(isActive('/blog'))}>Articles</Link>
       {tree.map((cat) => (
         <div key={cat.name} style={{ paddingLeft: 14 }}>
           <Link to={catLink(cat.name)} style={{ ...linkStyle(false), display: 'inline-block', fontSize: 14 }}>
@@ -362,15 +362,15 @@ export default function Navbar() {
         .nav-caret { transition: transform 0.2s ease; }
         .nav-caret.is-open { transform: rotate(180deg); }
 
-        .nav-blog-btn {
+        .nav-Articles-btn {
           border: 1px solid var(--color-ink);
           border-radius: var(--radius);
           color: #fff;
           background: var(--color-ink);
           transition: background 0.18s ease, color 0.18s ease, border-color 0.18s ease, transform 0.18s ease;
         }
-        .nav-blog-btn a { color: #fff !important; }
-        .nav-blog-btn:hover {
+        .nav-Articles-btn a { color: #fff !important; }
+        .nav-Articles-btn:hover {
           background: var(--color-ink);
           color: #fff;
           border-color: var(--color-ink);
@@ -391,7 +391,7 @@ export default function Navbar() {
   )
 }
 
-// One main category in the Blog dropdown. Its sub-categories appear in a small
+// One main category in the Articledropdown. Its sub-categories appear in a small
 // flyout next to it while the pointer is over the row (or a link inside has focus).
 function CatRow({ cat, activeCat, activeSub }) {
   const ref = useRef(null)

@@ -1,11 +1,11 @@
-# The Journal — Personal Blog
+# The Journal — Personal Articles
 
-React + Vite site with a public blog and a single-admin dashboard, backed by Supabase
+React + Vite site with a public Articleand a single-admin dashboard, backed by Supabase
 (auth, database, and image storage).
 
 ## What's included
 
-- Landing page + Blog listing + individual blog post pages (no signup needed for readers)
+- Landing page + Articlelisting + individual Articlepost pages (no signup needed for readers)
 - Privacy Policy and Terms & Conditions pages
 - `/admin/login` — only your one admin email can sign in
 - `/admin` — dashboard listing your posts (edit / delete)
@@ -69,7 +69,7 @@ Once your AdSense account is approved for this domain:
 
 1. Open `index.html`, find the commented-out `<script>` tag near the bottom of `<head>`,
    uncomment it, and put in your real `client=ca-pub-XXXXXXXXXXXXXXXX` id.
-2. The blog list and each post already have `<AdSlot />` placeholders
+2. The Articlelist and each post already have `<AdSlot />` placeholders
    (`src/components/AdSlot.jsx`) — replace the placeholder `<div>` inside with your real
    `<ins class="adsbygoogle">` ad unit code from AdSense.
 
@@ -79,7 +79,7 @@ Once your AdSense account is approved for this domain:
   sign in to `/admin` and can write/edit/delete posts — this is enforced both in the
   app and at the database level (Row Level Security), so it can't be bypassed by editing
   frontend code.
-- Visitors never need to sign up or log in to read the blog.
+- Visitors never need to sign up or log in to read the Articles.
 
 ---
 
@@ -97,7 +97,7 @@ own Supabase + Gmail accounts is involved.
 1. **Gmail App Password** — Gmail refuses plain passwords, so make one:
    turn on 2-Step Verification at <https://myaccount.google.com/security>,
    then open <https://myaccount.google.com/apppasswords>, create one named
-   "Blog" and copy the 16 letters.
+   "Articles" and copy the 16 letters.
 2. **Deploy the function** — Supabase Dashboard → Edge Functions →
    *Deploy a new function* → name it exactly `notify-comment` → paste
    `supabase/functions/notify-comment/index.ts` → Deploy.
@@ -117,7 +117,7 @@ is skipped, and you will still see them waiting in the admin panel.
 ### 3. Approving comments
 A new comment is saved as **waiting** and is invisible to readers.
 Go to **/admin → Comments** (the button shows how many are waiting), press
-**Approve**, and it appears in the right-hand column of that blog post.
+**Approve**, and it appears in the right-hand column of that Articlepost.
 
 ### 4. Related posts
 Every post now shows up to 3 more posts from the same category underneath it

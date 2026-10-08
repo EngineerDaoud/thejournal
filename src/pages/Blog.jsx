@@ -8,14 +8,14 @@ import AdSlot from '../components/AdSlot'
 import PageSkeleton from '../components/PageSkeleton'
 import PostGrid from '../components/PostGrid'
 
-export default function Blog() {
+export default function Articles() {
   const { posts, loading } = usePublishedPosts()
   const [searchParams, setSearchParams] = useSearchParams()
   const activeCategory = searchParams.get('category') || 'All'
   const activeSub = searchParams.get('sub') || ''
 
   useEffect(() => {
-    document.title = 'Blog — The Journal'
+    document.title = 'Articles — The Journal'
 
     // Live counts: when a post is added / edited / published / deleted (Supabase realtime)
     // the list is refreshed. The list is shared, so every part of the page updates by itself.
@@ -24,7 +24,7 @@ export default function Blog() {
     let channel = null
     try {
       channel = supabase
-        .channel('blog-posts-live')
+        .channel('Articles-posts-live')
         .on('postgres_changes', { event: '*', schema: 'public', table: 'posts' }, () =>
           fetchPublishedPosts({ force: true })
         )
@@ -108,7 +108,7 @@ export default function Blog() {
 
   return (
     <div className="container container-wide" style={{ paddingTop: 50, paddingBottom: 80 }}>
-      <h1 style={{ marginBottom: 26 }}>Blog</h1>
+      <h1 style={{ marginBottom: 26 }}>Articles</h1>
 
       {categories.length > 0 && (
         <div
@@ -146,7 +146,7 @@ export default function Blog() {
           ))}
           <span style={{ marginLeft: 'auto', fontSize: 14, color: 'var(--color-ink-soft)' }}>
             Total: <strong style={{ color: 'var(--color-ink)' }}>{posts.length}</strong>{' '}
-            {posts.length === 1 ? 'blog' : 'blogs'}
+            {posts.length === 1 ? 'article' : 'articles'}
           </span>
         </div>
       )}
@@ -174,22 +174,22 @@ export default function Blog() {
 
       {featured && (
         <div
-          className={`blog-hero${leftCol.length ? ' has-left' : ''}${rightCol.length ? ' has-right' : ''}`}
+          className={`Articles-hero${leftCol.length ? ' has-left' : ''}${rightCol.length ? ' has-right' : ''}`}
         >
           {leftCol.length > 0 && (
-            <aside className="blog-hero-side blog-hero-left" aria-label="Trending posts">
-              <div className="blog-side-title">Trending</div>
+            <aside className="Articles-hero-side Articles-hero-left" aria-label="Trending posts">
+              <div className="Articles-side-title">Trending</div>
               {leftCol.map((post, i) => (
                 <TrendingCard key={post.id} post={post} rank={i + 1} />
               ))}
             </aside>
           )}
 
-          <div className="blog-hero-main">
-            <div className="blog-side-title">Latest</div>
+          <div className="Articles-hero-main">
+            <div className="Articles-side-title">Latest</div>
             <PostCard post={featured} size="large" ratio="16 / 9" />
             {belowLatest.length > 0 && (
-              <div className="blog-hero-below">
+              <div className="Articles-hero-below">
                 {belowLatest.map((p) => (
                   <PostCard key={p.id} post={p} size="small" ratio="14 / 9" />
                 ))}
@@ -198,8 +198,8 @@ export default function Blog() {
           </div>
 
           {rightCol.length > 0 && (
-            <aside className="blog-hero-side blog-hero-right" aria-label="More trending posts">
-              <div className="blog-side-title">Trending</div>
+            <aside className="Articles-hero-side Articles-hero-right" aria-label="More trending posts">
+              <div className="Articles-side-title">Trending</div>
               {rightCol.map((post, i) => (
                 <TrendingCard key={post.id} post={post} rank={i + 4} />
               ))}

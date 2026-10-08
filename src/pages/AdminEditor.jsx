@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 import { supabase } from '../lib/supabaseClient'
-import { parseMarkdownBlog, postToMarkdown } from '../lib/parseBlog'
+import { parseMarkdownArticles, postToMarkdown } from '../lib/parseBlog'
 import BlockEditor, { newTextBlock } from '../components/BlockEditor'
 import Dropdown from '../components/Dropdown'
 import { parseCovers, serializeCovers } from '../lib/covers'
@@ -163,10 +163,10 @@ export default function AdminEditor() {
     }
   }
 
-  function applyPastedBlog(raw) {
+  function applyPastedArticles(raw) {
     const text = (raw || '').trim()
     if (!text) {
-      setPasteMsg('Nothing to paste. Copy the blog first, then paste it here.')
+      setPasteMsg('Nothing to paste. Copy the article first, then paste it here.')
       return
     }
     const hasContent =
@@ -174,9 +174,9 @@ export default function AdminEditor() {
     if (hasContent && !window.confirm('This will replace the current title and content. Continue?')) {
       return
     }
-    const parsed = parseMarkdownBlog(text)
+    const parsed = parseMarkdownArticles(text)
     if (!parsed.title && parsed.blocks.length === 0) {
-      setPasteMsg('Could not find any blog content in the pasted text.')
+      setPasteMsg('Could not find any article content in the pasted text.')
       return
     }
     if (parsed.title) {
@@ -188,14 +188,14 @@ export default function AdminEditor() {
     if (parsed.excerpt && !excerpt.trim()) setExcerpt(parsed.excerpt)
     setBlocks(parsed.blocks.length ? parsed.blocks : [newTextBlock('')])
     setPasteText('')
-    setPasteMsg(`Done. ${parsed.blocks.length} blocks filled in below. Review, pick a blog owner, then save as draft or publish.`)
+    setPasteMsg(`Done. ${parsed.blocks.length} blocks filled in below. Review, pick an author, then save as draft or publish.`)
     setMode('custom')
   }
 
   async function handlePasteFromClipboard() {
     try {
       const text = await navigator.clipboard.readText()
-      applyPastedBlog(text)
+      applyPastedArticles(text)
     } catch {
       setPasteMsg('Browser blocked clipboard access. Paste into the box below instead (Ctrl+V).')
     }
@@ -310,7 +310,7 @@ export default function AdminEditor() {
       return
     }
     if (!author.trim()) {
-      setError('Pick or type a blog owner.')
+      setError('Pick or type an author.')
       return
     }
     if (!category.trim()) {
@@ -377,8 +377,8 @@ export default function AdminEditor() {
 
         <div className="mode-switch" style={{ marginBottom: 0 }}>
           {[
-            { key: 'paste', title: 'Paste your blog', desc: 'Paste a full blog and it fills every section for you.' },
-            { key: 'custom', title: 'Custom blog', desc: 'Write it yourself, block by block.' },
+            { key: 'paste', title: 'Paste your article', desc: 'Paste a full article and it fills every section for you.' },
+            { key: 'custom', title: 'Custom article', desc: 'Write it yourself, block by block.' },
           ].map((opt) => (
             <button
               key={opt.key}
@@ -410,10 +410,10 @@ export default function AdminEditor() {
           }}
         >
           <label style={{ display: 'block', fontWeight: 600, marginBottom: 6 }}>
-            Quick paste: full blog
+            Quick paste: full article
           </label>
           <p style={{ fontSize: 13, color: 'var(--color-ink-soft)', marginBottom: 10 }}>
-            Paste the whole blog (Markdown) here. Title, TL;DR, headings, paragraphs, tables, FAQs
+            Paste the whole article (Markdown) here. Title, TL;DR, headings, paragraphs, tables, FAQs
             and images go into their own sections automatically.
           </p>
           <textarea
@@ -424,10 +424,10 @@ export default function AdminEditor() {
               const text = e.clipboardData.getData('text')
               if (text) {
                 e.preventDefault()
-                applyPastedBlog(text)
+                applyPastedArticles(text)
               }
             }}
-            placeholder="Ctrl+V here and the blog fills in automatically..."
+            placeholder="Ctrl+V here and the article fills in automatically..."
           />
           <div style={{ display: 'flex', gap: 10, marginTop: 10, flexWrap: 'wrap' }}>
             <button type="button" className="btn" style={{ fontSize: 13 }} onClick={handlePasteFromClipboard}>
@@ -437,7 +437,7 @@ export default function AdminEditor() {
               type="button"
               className="btn btn-outline"
               style={{ fontSize: 13 }}
-              onClick={() => applyPastedBlog(pasteText)}
+              onClick={() => applyPastedArticles(pasteText)}
             >
               Fill from text box
             </button>
@@ -545,7 +545,7 @@ export default function AdminEditor() {
           </div>
 
           <div className="field">
-            <label htmlFor="author">Blog owner</label>
+            <label htmlFor="author">Author</label>
             <div style={{ display: 'flex', gap: 16, alignItems: 'center' }}>
               <div style={{ flex: 1, minWidth: 0 }}>
                 {!addingNewAuthor ? (
@@ -553,7 +553,7 @@ export default function AdminEditor() {
                     <Dropdown
                       id="author"
                       value={author}
-                      placeholder="Blog owner"
+                      placeholder="Author"
                       style={{ flex: 1 }}
                       options={existingAuthors.map((name) => ({ value: name, label: name }))}
                       emptyText="No owners yet — use + New"
@@ -563,7 +563,7 @@ export default function AdminEditor() {
                       type="button"
                       className="btn btn-outline"
                       style={{ whiteSpace: 'nowrap' }}
-                      title="Add a new blog owner"
+                      title="Add a new author"
                       onClick={() => {
                         setAddingNewAuthor(true)
                         setAuthor('')
@@ -576,7 +576,7 @@ export default function AdminEditor() {
                   <div style={{ display: 'flex', gap: 8 }}>
                     <input
                       type="text"
-                      placeholder="Blog owner"
+                      placeholder="Author"
                       value={author}
                       onChange={(e) => setAuthor(e.target.value)}
                     />
@@ -812,7 +812,7 @@ export default function AdminEditor() {
             </div>
 
             <div className="field">
-              <label htmlFor="excerpt">Short excerpt (shown in blog listing)</label>
+              <label htmlFor="excerpt">Short excerpt (shown in article listing)</label>
               <textarea
                 id="excerpt"
                 value={excerpt}

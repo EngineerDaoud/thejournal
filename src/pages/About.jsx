@@ -140,7 +140,7 @@ export default function About() {
 
       <h2>Explore and stay in touch</h2>
       <p>
-        Head to the <Link className="underline-link" to="/blog">Blog</Link> to browse every article, or use the Blog menu at
+        Head to the <Link className="underline-link" to="/blog">Articles</Link> to browse every article, or use the Articles menu at
         the top of the page to jump to a category. Have a question, correction or
         idea? Visit our <Link className="underline-link" to="/contact">Contact</Link> page
         {SITE.email ? <> or email us directly at <a className="underline-link" href={`mailto:${SITE.email}`}>{SITE.email}</a></> : null}.

@@ -67,7 +67,7 @@ export default function BlogPost() {
     return (
       <div className="measure" style={{ paddingTop: 60 }}>
         <h1>Post not found</h1>
-        <Link to="/blog" className="underline-link">Back to blog</Link>
+        <Link to="/blog" className="underline-link">Back to Articles</Link>
       </div>
     )
   }

@@ -1,7 +1,7 @@
 import { supabase } from './supabaseClient'
 import { readStored, writeStored } from './cache'
 
-// One request shared by every AuthorAvatar on a page (Blog list, an article's
+// One request shared by every AuthorAvatar on a page (Articlelist, an article's
 // AuthorBox, the Author page) instead of one query per avatar.
 const KEY = 'journal:authors:v1'
 const FRESH_MS = 5 * 60 * 1000

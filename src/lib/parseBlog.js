@@ -1,4 +1,4 @@
-// Turns a pasted Markdown blog (title, TL;DR, headings, paragraphs, tables,
+// Turns a pasted Markdown Article(title, TL;DR, headings, paragraphs, tables,
 // FAQs, images) into the block structure the editor uses.
 
 let idCounter = 0
@@ -51,7 +51,7 @@ function parseTableRow(line) {
     .map((cell) => cell.trim())
 }
 
-export function parseMarkdownBlog(raw) {
+export function parseMarkdownArticles(raw) {
   const lines = raw.replace(/\r\n/g, '\n').split('\n')
   let title = ''
   let tldr = ''

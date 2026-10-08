@@ -1,5 +1,5 @@
 -- Run once in Supabase: Dashboard -> SQL Editor -> New query -> paste -> Run.
--- Lets each blog "owner" (the Author field in the post editor) have their own
+-- Lets each Article"owner" (the Author field in the post editor) have their own
 -- picture. The picture is stored small (a data URL), so no Storage bucket is
 -- needed. Picking the same owner again always shows their saved picture.
 

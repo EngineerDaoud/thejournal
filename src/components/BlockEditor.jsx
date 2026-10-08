@@ -141,7 +141,7 @@ async function uploadDownloadFile(file) {
 }
 
 const SITE_PAGES = [
-  { label: 'Page: Blog (all posts)', url: '/blog' },
+  { label: 'Page: Article(all posts)', url: '/blog' },
   { label: 'Page: Contact Us', url: '/contact' },
   { label: 'Page: Privacy Policy', url: '/privacy-policy' },
   { label: 'Page: Terms & Conditions', url: '/terms-and-conditions' },

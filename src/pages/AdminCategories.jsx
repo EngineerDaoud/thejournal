@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { supabase } from '../lib/supabaseClient'
+import { confirmDialog } from '../components/ConfirmDialog'
 
 export default function AdminCategories() {
   const [rows, setRows] = useState([])
@@ -59,10 +60,16 @@ export default function AdminCategories() {
   }
 
   async function remove(row, isParent) {
-    const msg = isParent
-      ? `Delete "${row.name}" and all its subcategories from the menu? Posts are not deleted.`
-      : `Delete subcategory "${row.name}" from the menu? Posts are not deleted.`
-    if (!confirm(msg)) return
+    const ok = await confirmDialog({
+      title: isParent ? 'Delete this category?' : 'Delete this subcategory?',
+      message: isParent
+        ? `"${row.name}" and all its subcategories will be removed from the menu. Posts are not deleted.`
+        : `"${row.name}" will be removed from the menu. Posts are not deleted.`,
+      confirmText: 'Delete',
+      cancelText: 'Cancel',
+      danger: true,
+    })
+    if (!ok) return
     await supabase.from('categories').delete().eq('id', row.id)
     load()
   }
@@ -86,7 +93,7 @@ export default function AdminCategories() {
       </div>
 
       <p style={{ fontSize: 14, color: 'var(--color-ink-soft)', marginBottom: 24 }}>
-        These show up in the Blog dropdown in the navbar. Add a category, then add subcategories
+        These show up in the Articles dropdown in the navbar. Add a category, then add subcategories
         under it.
       </p>
 

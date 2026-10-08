@@ -10,7 +10,7 @@ export function formatViews(n) {
   return String(v)
 }
 
-// Compact overlay card used in the two side columns of the Blog page (most viewed posts).
+// Compact overlay card used in the two side columns of the Articlepage (most viewed posts).
 export default function TrendingCard({ post, rank }) {
   const covers = parseCovers(post.cover_image)
   const views = Number(post.views) || 0

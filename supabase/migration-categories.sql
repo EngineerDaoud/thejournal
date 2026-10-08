@@ -1,5 +1,5 @@
 -- Run once in Supabase: Dashboard -> SQL Editor -> New query -> paste -> Run.
--- Adds categories + subcategories (used by the Blog dropdown in the navbar).
+-- Adds categories + subcategories (used by the Articledropdown in the navbar).
 
 alter table posts add column if not exists subcategory text;
 

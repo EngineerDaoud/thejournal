@@ -4,6 +4,7 @@ import { supabase } from '../lib/supabaseClient'
 import { useAuth } from '../context/AuthContext'
 import { countPendingComments } from '../lib/comments'
 import AdminAvatar from '../components/AdminAvatar'
+import { confirmDialog } from '../components/ConfirmDialog'
 
 export default function AdminDashboard() {
   const [posts, setPosts] = useState([])
@@ -29,8 +30,15 @@ export default function AdminDashboard() {
     countPendingComments().then(setPending)
   }, [])
 
-  async function handleDelete(id) {
-    if (!confirm('Delete this post? This cannot be undone.')) return
+  async function handleDelete(id, title) {
+    const ok = await confirmDialog({
+      title: 'Delete this post?',
+      message: `"${title}" will be deleted for good. This cannot be undone.`,
+      confirmText: 'Delete',
+      cancelText: 'Cancel',
+      danger: true,
+    })
+    if (!ok) return
     await supabase.from('posts').delete().eq('id', id)
     loadPosts()
   }
@@ -128,7 +136,7 @@ export default function AdminDashboard() {
                 Edit
               </Link>
               <button
-                onClick={() => handleDelete(post.id)}
+                onClick={() => handleDelete(post.id, post.title)}
                 className="btn-danger btn"
                 style={{ fontSize: 12, padding: '6px 10px' }}
               >

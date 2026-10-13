@@ -2,6 +2,31 @@
 <html lang="en">
   <head>
     <!-- Google tag (gtag.js) -->
+    <script>
+      (function () {
+        var GA_ID = 'G-GH7YG688DD';
+
+        // /admin pe GA tracking band rakhne ke liye
+        function isAdmin() {
+          return location.pathname.indexOf('/admin') === 0;
+        }
+        function syncGA() {
+          window['ga-disable-' + GA_ID] = isAdmin();
+        }
+        syncGA();
+
+        // SPA navigation (React Router) ke baad bhi check update ho
+        ['pushState', 'replaceState'].forEach(function (method) {
+          var original = history[method];
+          history[method] = function () {
+            var result = original.apply(this, arguments);
+            syncGA();
+            return result;
+          };
+        });
+        window.addEventListener('popstate', syncGA);
+      })();
+    </script>
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-GH7YG688DD"></script>
     <script>
       window.dataLayer = window.dataLayer || [];

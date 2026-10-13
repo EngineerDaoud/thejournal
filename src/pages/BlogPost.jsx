@@ -110,6 +110,11 @@ export default function BlogPost() {
             </Link>
           </>
         )}
+        {post.reading_time > 0 && (
+          <span style={{ ...BADGE, marginLeft: 10, cursor: 'default' }}>
+            {post.reading_time} min read
+          </span>
+        )}
         <div style={{ fontSize: 13, color: 'var(--color-ink-soft)', margin: '14px 0 26px', lineHeight: 1.4 }}>
           {post.author && (
             <>

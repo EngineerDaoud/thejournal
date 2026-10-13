@@ -40,6 +40,7 @@ export default function AdminEditor() {
   const [addingNewCategory, setAddingNewCategory] = useState(false)
   const [catTree, setCatTree] = useState([])
   const [subcategory, setSubcategory] = useState('')
+  const [readingTime, setReadingTime] = useState('') // minutes, typed by the admin
   const [addingNewSub, setAddingNewSub] = useState(false)
   const [postCatsLoaded, setPostCatsLoaded] = useState(false)
   const [treeLoaded, setTreeLoaded] = useState(false)
@@ -150,6 +151,7 @@ export default function AdminEditor() {
         setCoverImages(parseCovers(data.cover_image))
         setCategory(data.category || 'General')
         setSubcategory(data.subcategory || '')
+        setReadingTime(data.reading_time ? String(data.reading_time) : '')
         setAuthor(data.author || '')
         setPublished(data.published)
         setScheduleAt(!data.published && data.publish_at ? toLocalInput(data.publish_at) : '')
@@ -334,6 +336,7 @@ export default function AdminEditor() {
       cover_image: serializeCovers(coverImages),
       category: category.trim(),
       subcategory: subcategory.trim() || null,
+      reading_time: Number(readingTime) > 0 ? Math.round(Number(readingTime)) : null,
       author: author.trim(),
       content: blocks,
       published: publishValue,
@@ -735,6 +738,20 @@ export default function AdminEditor() {
                 )}
               </div>
             )}
+
+            <div style={{ marginTop: 14 }}>
+              <label htmlFor="reading-time">Estimated reading time (minutes)</label>
+              <input
+                id="reading-time"
+                type="number"
+                min="1"
+                max="240"
+                inputMode="numeric"
+                placeholder="e.g. 5 (leave empty to hide)"
+                value={readingTime}
+                onChange={(e) => setReadingTime(e.target.value)}
+              />
+            </div>
           </div>
 
           <div className="field kw-admin">

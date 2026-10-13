@@ -14,9 +14,9 @@ let frameCounter = 0
 function buildHtmlDoc(html, id) {
   return `<!doctype html><html><head><meta charset="utf-8"><base target="_blank">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<style>html,body{margin:0;padding:0}body{display:flow-root;font-family:'Times New Roman',Times,serif;font-size:17px;line-height:1.6;color:#23241F;background:transparent}img,canvas{max-width:100%}</style>
+<style>html,body{margin:0;padding:0;overflow:hidden}body{display:flow-root;font-family:'Times New Roman',Times,serif;font-size:17px;line-height:1.6;color:#23241F;background:transparent}img,canvas{max-width:100%}</style>
 </head><body>${html}
-<script>(function(){var id=${JSON.stringify(id)};function send(){try{parent.postMessage({__htmlBlock:id,height:document.body.offsetHeight},'*')}catch(e){}}window.addEventListener('load',send);if(window.ResizeObserver){new ResizeObserver(send).observe(document.body)}setTimeout(send,150);setTimeout(send,800)})();</script>
+<script>(function(){var id=${JSON.stringify(id)};var last=-1,t=null;function measure(){var r=document.body.getBoundingClientRect();return Math.ceil(r.height+Math.max(0,r.top))}function send(){t=null;var h=measure();if(Math.abs(h-last)<2)return;last=h;try{parent.postMessage({__htmlBlock:id,height:h},'*')}catch(e){}}function later(){if(t)return;t=setTimeout(send,120)}window.addEventListener('load',later);if(window.ResizeObserver){new ResizeObserver(later).observe(document.body)}setTimeout(send,150);setTimeout(send,800)})();</script>
 </body></html>`
 }
 
@@ -25,13 +25,22 @@ export function HtmlFrame({ html, compact = false }) {
   const id = useMemo(() => `hf-${Date.now()}-${++frameCounter}`, [])
   const doc = useMemo(() => buildHtmlDoc(html || '', id), [html, id])
   const [height, setHeight] = useState(160)
+  const changes = useRef(0)
 
   useEffect(() => {
     function onMessage(e) {
       if (e.source !== ref.current?.contentWindow) return
       const d = e.data
       if (d && d.__htmlBlock === id && Number.isFinite(d.height)) {
-        setHeight(Math.min(Math.max(40, Math.ceil(d.height)), 6000))
+        const next = Math.min(Math.max(40, Math.ceil(d.height)), 6000)
+        setHeight((prev) => {
+          if (Math.abs(next - prev) < 2) return prev
+          // Safety: a chart that uses 100vh / height:100% can make the frame grow and
+          // shrink forever (this is what looks like blinking). After 12 changes we stop.
+          if (changes.current >= 12) return prev
+          changes.current += 1
+          return next
+        })
       }
     }
     window.addEventListener('message', onMessage)
@@ -43,8 +52,9 @@ export function HtmlFrame({ html, compact = false }) {
       ref={ref}
       title="Custom HTML"
       srcDoc={doc}
+      scrolling="no"
       sandbox="allow-scripts allow-popups allow-popups-to-escape-sandbox"
-      style={{ width: '100%', height, border: 0, display: 'block', margin: compact ? 0 : '32px 0' }}
+      style={{ width: '100%', height, border: 0, display: 'block', overflow: 'hidden', margin: compact ? 0 : '32px 0' }}
     />
   )
 }

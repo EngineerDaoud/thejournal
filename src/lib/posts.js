@@ -11,6 +11,21 @@ let listInflight = null
 let hasViewsColumn = true
 const subscribers = new Set()
 
+// Scheduled posts: asks the database to publish every post whose time has come.
+// It is cheap and safe to call often (at most once every 30 seconds from here).
+let lastDueCheck = 0
+export async function publishDuePosts(force = false) {
+  if (!force && Date.now() - lastDueCheck < 30 * 1000) return false
+  lastDueCheck = Date.now()
+  try {
+    const { data, error } = await supabase.rpc('publish_due_posts')
+    if (error) return false // migration-schedule.sql not run yet: just ignore
+    return Number(data) > 0
+  } catch (e) {
+    return false
+  }
+}
+
 function remember(data) {
   listCache = { at: Date.now(), data }
   writeStored(LIST_KEY, data)
@@ -29,6 +44,7 @@ export function getCachedPosts() {
 }
 
 async function requestPublishedPosts() {
+  await publishDuePosts()
   const run = (cols) =>
     supabase.from('posts').select(cols).eq('published', true).order('created_at', { ascending: false })
 
@@ -93,11 +109,10 @@ export function getCachedPost(slug) {
 
 export function fetchPostBySlug(slug) {
   if (postInflight.has(slug)) return postInflight.get(slug)
-  const p = supabase
-    .from('posts')
-    .select('*')
-    .eq('slug', slug)
-    .maybeSingle()
+  const p = publishDuePosts()
+    .then(() =>
+      supabase.from('posts').select('*').eq('slug', slug).maybeSingle()
+    )
     .then(({ data, error }) => {
       if (error || !data) return null
       if (data.published) postCache.set(slug, data)

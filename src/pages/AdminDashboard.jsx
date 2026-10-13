@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { supabase } from '../lib/supabaseClient'
+import { publishDuePosts } from '../lib/posts'
 import { useAuth } from '../context/AuthContext'
 import { countPendingComments } from '../lib/comments'
 import AdminAvatar from '../components/AdminAvatar'
@@ -16,9 +17,10 @@ export default function AdminDashboard() {
 
   async function loadPosts() {
     setLoading(true)
+    await publishDuePosts(true) // anything whose time has come goes live first
     const { data } = await supabase
       .from('posts')
-      .select('id, title, slug, published, author, created_at')
+      .select('id, title, slug, published, publish_at, author, created_at')
       .order('created_at', { ascending: false })
     setPosts(data || [])
     setLoading(false)
@@ -46,15 +48,23 @@ export default function AdminDashboard() {
   async function setPublished(id, value) {
     await supabase
       .from('posts')
-      .update({ published: value, updated_at: new Date().toISOString() })
+      .update({ published: value, publish_at: null, updated_at: new Date().toISOString() })
       .eq('id', id)
     loadPosts()
   }
 
-  const draftCount = posts.filter((p) => !p.published).length
-  const liveCount = posts.length - draftCount
+  const isScheduled = (p) => !p.published && Boolean(p.publish_at)
+  const scheduledCount = posts.filter(isScheduled).length
+  const liveCount = posts.filter((p) => p.published).length
+  const draftCount = posts.length - liveCount - scheduledCount
   const visible = posts.filter((p) =>
-    filter === 'all' ? true : filter === 'draft' ? !p.published : p.published
+    filter === 'all'
+      ? true
+      : filter === 'live'
+      ? p.published
+      : filter === 'scheduled'
+      ? isScheduled(p)
+      : !p.published && !p.publish_at
   )
 
   async function handleSignOut() {
@@ -90,6 +100,7 @@ export default function AdminDashboard() {
         {[
           { key: 'all', label: `All (${posts.length})` },
           { key: 'live', label: `Live (${liveCount})` },
+          { key: 'scheduled', label: `Scheduled (${scheduledCount})` },
           { key: 'draft', label: `Drafts (${draftCount})` },
         ].map((t) => (
           <button
@@ -117,7 +128,12 @@ export default function AdminDashboard() {
           <div key={post.id} className="admin-post-card">
             <div style={{ fontSize: 17, marginBottom: 8, lineHeight: 1.3 }}>{post.title}</div>
             <div style={{ fontSize: 13, color: 'var(--color-ink-soft)', marginBottom: 16 }}>
-              {post.published ? 'Live' : 'Draft (only you can see it)'} &middot;{' '}
+              {post.published
+                ? 'Live'
+                : post.publish_at
+                ? `Scheduled: ${new Date(post.publish_at).toLocaleString([], { dateStyle: 'medium', timeStyle: 'short' })}`
+                : 'Draft (only you can see it)'}{' '}
+              &middot;{' '}
               {post.author ? `${post.author} \u00b7 ` : ''}
               {new Date(post.created_at).toLocaleDateString()}
             </div>

@@ -20,6 +20,19 @@ function slugify(text) {
     .replace(/-+/g, '-')
 }
 
+// Date -> value for <input type="datetime-local"> in the admin's own time zone.
+function toLocalInput(value) {
+  const d = new Date(value)
+  if (isNaN(d)) return ''
+  const pad = (n) => String(n).padStart(2, '0')
+  return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}`
+}
+
+function formatWhen(local) {
+  const d = new Date(local)
+  return isNaN(d) ? '' : d.toLocaleString([], { dateStyle: 'medium', timeStyle: 'short' })
+}
+
 export default function AdminEditor() {
   const { id } = useParams()
   const isEditing = Boolean(id)
@@ -43,6 +56,7 @@ export default function AdminEditor() {
   const [postCatsLoaded, setPostCatsLoaded] = useState(false)
   const [treeLoaded, setTreeLoaded] = useState(false)
   const [published, setPublished] = useState(false)
+  const [scheduleAt, setScheduleAt] = useState('') // value of the date/time picker (your local time)
   const [author, setAuthor] = useState('')
   const [existingAuthors, setExistingAuthors] = useState([])
   const [addingNewAuthor, setAddingNewAuthor] = useState(false)
@@ -150,6 +164,7 @@ export default function AdminEditor() {
         setSubcategory(data.subcategory || '')
         setAuthor(data.author || '')
         setPublished(data.published)
+        setScheduleAt(!data.published && data.publish_at ? toLocalInput(data.publish_at) : '')
         setBlocks(data.content && data.content.length ? data.content : [newTextBlock('')])
         slugTouched.current = true
         setLoading(false)
@@ -304,7 +319,7 @@ export default function AdminEditor() {
     }
   }
 
-  async function savePost(publishValue) {
+  async function savePost(publishValue, scheduleIso = null) {
     if (!title.trim() || !slug.trim()) {
       setError('Title and slug are required.')
       return
@@ -334,6 +349,7 @@ export default function AdminEditor() {
       author: author.trim(),
       content: blocks,
       published: publishValue,
+      publish_at: publishValue ? null : scheduleIso,
       updated_at: new Date().toISOString(),
     }
 
@@ -355,6 +371,19 @@ export default function AdminEditor() {
 
     await ensureCategory()
     navigate('/admin')
+  }
+
+  function handleSchedule() {
+    if (!scheduleAt) {
+      setError('Pick a date and time first.')
+      return
+    }
+    const when = new Date(scheduleAt)
+    if (isNaN(when) || when.getTime() <= Date.now() + 30 * 1000) {
+      setError('Pick a time in the future.')
+      return
+    }
+    savePost(false, when.toISOString())
   }
 
   if (loading) {
@@ -456,9 +485,13 @@ export default function AdminEditor() {
 
         <div className="editor-actionbar">
           <span>
-            Status: <strong>{published ? 'Live' : 'Draft'}</strong>{' '}
+            Status: <strong>{published ? 'Live' : scheduleAt ? 'Scheduled' : 'Draft'}</strong>{' '}
             <span style={{ color: 'var(--color-ink-soft)' }}>
-              {published ? '(visible to everyone)' : '(only you can see this)'}
+              {published
+                ? '(visible to everyone)'
+                : scheduleAt
+                ? `(goes live ${formatWhen(scheduleAt)})`
+                : '(only you can see this)'}
             </span>
           </span>
 
@@ -511,6 +544,37 @@ export default function AdminEditor() {
             </button>
           </span>
         </div>
+
+        {!published && (
+          <div
+            className="editor-actionbar"
+            style={{ justifyContent: 'flex-start', gap: 12 }}
+          >
+            <label htmlFor="schedule-at" style={{ fontWeight: 600 }}>
+              Schedule for later
+            </label>
+            <input
+              id="schedule-at"
+              type="datetime-local"
+              value={scheduleAt}
+              min={toLocalInput(new Date())}
+              onChange={(e) => setScheduleAt(e.target.value)}
+              style={{ width: 'auto' }}
+            />
+            <button type="button" className="btn" disabled={saving} onClick={handleSchedule}>
+              {saving ? 'Saving...' : scheduleAt ? 'Schedule' : 'Pick a time'}
+            </button>
+            {scheduleAt && (
+              <button type="button" className="btn btn-outline" onClick={() => setScheduleAt('')}>
+                Clear
+              </button>
+            )}
+            <span style={{ color: 'var(--color-ink-soft)', fontSize: 13 }}>
+              Uses your device time. The post stays hidden until then, then goes live by itself.
+              “Save draft” removes the schedule.
+            </span>
+          </div>
+        )}
 
         {error && (
           <p style={{ color: 'var(--color-danger)', fontSize: 14, marginBottom: 14 }}>{error}</p>

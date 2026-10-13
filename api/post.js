@@ -22,6 +22,23 @@ function cleanText(s) {
     .trim()
 }
 
+// A usable description: not empty, not just "Estimated Reading Time ...", at least a real sentence.
+const usable = (t) => t.length >= 50 && !/^estimated reading time/i.test(t)
+
+function pickDescription(post) {
+  const candidates = [post.excerpt, post.tldr]
+  if (Array.isArray(post.content)) {
+    for (const b of post.content) {
+      if (b && b.type === 'text' && b.content) candidates.push(b.content)
+    }
+  }
+  for (const c of candidates) {
+    const t = cleanText(c)
+    if (usable(t)) return t
+  }
+  return DEFAULT_DESC
+}
+
 function cut(s, max) {
   if (s.length <= max) return s
   return s.slice(0, max - 1).replace(/\s+\S*$/, '') + '\u2026'
@@ -58,7 +75,7 @@ export default async function handler(req, res) {
   let post = null
   try {
     const r = await fetch(
-      `${supabaseUrl}/rest/v1/posts?select=title,excerpt,cover_image,author,category,created_at,slug` +
+      `${supabaseUrl}/rest/v1/posts?select=*` +
         `&slug=eq.${encodeURIComponent(slug)}&published=eq.true&limit=1`,
       { headers: { apikey: anonKey, Authorization: `Bearer ${anonKey}` } }
     )
@@ -73,7 +90,7 @@ export default async function handler(req, res) {
   if (post) {
     const title = String(post.title || '').replace(/\s+/g, ' ').trim()
     const fullTitle = `${title} \u2014 ${SITE_NAME}`
-    const desc = cut(cleanText(post.excerpt) || DEFAULT_DESC, 160)
+    const desc = cut(pickDescription(post), 160)
     const url = `${SITE_URL}/blog/${encodeURIComponent(post.slug)}`
     const image = firstImage(post.cover_image)
     const published = post.created_at ? new Date(post.created_at).toISOString() : ''

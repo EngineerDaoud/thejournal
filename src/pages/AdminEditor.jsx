@@ -768,35 +768,8 @@ export default function AdminEditor() {
                 onChange={(e) => setReadingTime(e.target.value)}
               />
             </div>
-          </div>
 
-          <div className="field kw-admin">
-            <label htmlFor="keywords">Keywords</label>
-            <div className="kw-admin-box">
-              <div className="kw-admin-row">
-                <div className="kw-admin-name">Primary</div>
-                <KeywordsInput
-                  value={primaryKw}
-                  onChange={setPrimaryKw}
-                 
-                />
-              </div>
-              <div className="kw-admin-row">
-                <div className="kw-admin-name">Secondary</div>
-                <KeywordsInput
-                  value={secondaryKw}
-                  onChange={setSecondaryKw}
-                
-                />
-              </div>
-  
-            </div>
-          </div>
-        </div>
-
-        <div className="field-grid field-compact">
-          <div className="field field-wide cover-excerpt-row">
-            <div className="field">
+            <div className="field" style={{ marginTop: 14 }}>
               <label>
                 Cover images (optional)
                 {coverImages.length > 1 && (
@@ -860,8 +833,13 @@ export default function AdminEditor() {
               </div>
 
               {coverImages.length > 0 && (
-                <details className="img-seo" open={coverImages.some((u) => !(coverMeta[u]?.alt || '').trim())}>
-                  <summary>Image SEO: alt text, title, caption</summary>
+                <details className="img-seo">
+                  <summary>
+                    Image SEO: alt text, title, caption
+                    {coverImages.some((u) => !(coverMeta[u]?.alt || '').trim()) && (
+                      <span className="img-seo-warn"> · alt text missing</span>
+                    )}
+                  </summary>
                   <p className="img-seo-hint">
                     <strong>Alt text</strong> is the important one: describe the image in one short sentence
                     (Google and screen readers use it). Title and caption are optional. If alt text is empty,
@@ -907,15 +885,48 @@ export default function AdminEditor() {
                 }}
               />
             </div>
+          </div>
 
-            <div className="field">
-              <label htmlFor="excerpt">Short excerpt (shown in article listing)</label>
-              <textarea
-                id="excerpt"
-                value={excerpt}
-                onChange={(e) => setExcerpt(e.target.value)}
-              />
+          <div className="field kw-admin">
+            <label htmlFor="keywords">Keywords</label>
+            <div className="kw-admin-box">
+              <div className="kw-admin-row">
+                <div className="kw-admin-name">Primary</div>
+                <KeywordsInput
+                  value={primaryKw}
+                  onChange={setPrimaryKw}
+                 
+                />
+              </div>
+              <div className="kw-admin-row">
+                <div className="kw-admin-name">Secondary</div>
+                <KeywordsInput
+                  value={secondaryKw}
+                  onChange={setSecondaryKw}
+                
+                />
+              </div>
+  
             </div>
+          </div>
+        </div>
+
+        <div className="field-grid field-compact">
+          <div className="field field-wide">
+            <label htmlFor="excerpt">
+              Short excerpt (shown in article listing)
+              <span style={{ float: 'right', color: excerpt.length > 160 ? 'var(--color-danger)' : 'var(--color-ink-soft)' }}>
+                {excerpt.length} / 160
+              </span>
+            </label>
+            <textarea
+              id="excerpt"
+              rows={3}
+              placeholder="One or two sentences that make people want to open the article"
+              value={excerpt}
+              onChange={(e) => setExcerpt(e.target.value)}
+              style={{ resize: 'vertical', minHeight: 84 }}
+            />
           </div>
         </div>
 

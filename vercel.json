@@ -3,7 +3,7 @@
     {
       "source": "/sitemap.xml",
       "destination": "/api/sitemap"
-    },
+    },{ "source": "/blog/:slug", "destination": "/api/post?slug=:slug" },
     {
       "source": "/(.*)",
       "destination": "/index.html"

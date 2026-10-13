@@ -56,7 +56,7 @@ export function newHeadingBlock(content = '', align = 'left') {
 }
 
 export function newImageBlock(url, caption = '', width = 'large') {
-  return { id: newId(), type: 'image', url, caption, width }
+  return { id: newId(), type: 'image', url, caption, alt: '', title: '', width }
 }
 
 export function newTableBlock() {
@@ -2211,7 +2211,7 @@ export default function BlockEditor({ blocks, onChange, tldr, onTldrChange }) {
             <div>
               <img
                 src={block.url}
-                alt={block.caption}
+                alt={block.alt || block.caption}
                 style={{
                   width:
                     block.width === 'small' ? '40%' : block.width === 'medium' ? '70%' : '100%',
@@ -2234,7 +2234,21 @@ export default function BlockEditor({ blocks, onChange, tldr, onTldrChange }) {
               </div>
               <input
                 type="text"
-                placeholder="Caption (optional)"
+                placeholder="Alt text: describe the image (important for SEO)"
+                value={block.alt || ''}
+                onChange={(e) => updateBlock(block.id, { alt: e.target.value })}
+                style={{ marginBottom: 8 }}
+              />
+              <input
+                type="text"
+                placeholder="Image title (optional)"
+                value={block.title || ''}
+                onChange={(e) => updateBlock(block.id, { title: e.target.value })}
+                style={{ marginBottom: 8 }}
+              />
+              <input
+                type="text"
+                placeholder="Caption under the image (optional)"
                 value={block.caption}
                 onChange={(e) => updateBlock(block.id, { caption: e.target.value })}
               />

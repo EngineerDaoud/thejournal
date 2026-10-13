@@ -151,6 +151,8 @@ export function parseMarkdownArticles(raw) {
         type: 'image',
         url: imgMatch[2],
         caption: imgMatch[1] || '',
+        alt: imgMatch[1] || '',
+        title: '',
         width: 'large',
       })
       i++
@@ -222,7 +224,7 @@ export function postToMarkdown({ title, tldr, blocks, ctaText }) {
     } else if (b.type === 'text' && b.content?.trim()) {
       out.push(b.content.trim())
     } else if (b.type === 'image' && b.url) {
-      out.push(`![${b.caption || ''}](${b.url})`)
+      out.push(`![${b.alt || b.caption || ''}](${b.url})`)
     } else if (b.type === 'table') {
       const head = `| ${b.headers.join(' | ')} |`
       const sep = `| ${b.headers.map(() => '---').join(' | ')} |`

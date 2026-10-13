@@ -106,7 +106,8 @@ function renderBlock(block) {
             <figure key={block.id} style={{ margin: '32px 0' }}>
               <img
                 src={block.url}
-                alt={block.caption || ''}
+                alt={block.alt || block.caption || ''}
+                title={block.title || undefined}
                 style={{ width, margin: '0 auto', borderRadius: 4 }}
               />
               {block.caption && (

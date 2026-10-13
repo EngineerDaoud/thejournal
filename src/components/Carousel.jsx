@@ -6,7 +6,9 @@ import { useEffect, useRef, useState } from 'react'
 // live preview in the admin editor); it pauses while the pointer is over it
 // or a finger is on it, and always resets to a plain image when there is
 // only one to show.
-export default function Carousel({ images = [], alt = '', style, autoPlay = false, interval = 5000 }) {
+const CAPTION = { textAlign: 'center', fontSize: 13, color: 'var(--color-ink-soft)', marginTop: 8 }
+
+export default function Carousel({ images = [], alt = '', metas = [], style, autoPlay = false, interval = 5000 }) {
   const [index, setIndex] = useState(0)
   const [paused, setPaused] = useState(false)
   const touchX = useRef(null)
@@ -24,22 +26,30 @@ export default function Carousel({ images = [], alt = '', style, autoPlay = fals
 
   if (count === 0) return null
 
+  // metas[i] = { alt, title, caption } typed by the admin for image i (all optional)
   if (count === 1) {
+    const m = metas[0] || {}
     return (
-      <img
-        src={images[0]}
-        alt={alt}
-        style={{ width: '100%', borderRadius: 'var(--radius-md)', ...style }}
-      />
+      <figure style={{ margin: 0, ...style }}>
+        <img
+          src={images[0]}
+          alt={m.alt || alt}
+          title={m.title || undefined}
+          style={{ width: '100%', borderRadius: 'var(--radius-md)', display: 'block' }}
+        />
+        {m.caption && <figcaption style={CAPTION}>{m.caption}</figcaption>}
+      </figure>
     )
   }
 
   const go = (n) => setIndex(((n % count) + count) % count)
 
+  const cap = metas[index]?.caption
+
   return (
+    <div style={style}>
     <div
       className="carousel"
-      style={style}
       onMouseEnter={() => setPaused(true)}
       onMouseLeave={() => setPaused(false)}
       onKeyDown={(e) => {
@@ -64,7 +74,12 @@ export default function Carousel({ images = [], alt = '', style, autoPlay = fals
       <div className="carousel-track" style={{ transform: `translateX(-${index * 100}%)` }}>
         {images.map((src, i) => (
           <div className="carousel-slide" key={`${src}-${i}`} aria-hidden={i !== index}>
-            <img src={src} alt={i === index ? alt : ''} draggable={false} />
+            <img
+              src={src}
+              alt={i === index ? metas[i]?.alt || alt : ''}
+              title={metas[i]?.title || undefined}
+              draggable={false}
+            />
           </div>
         ))}
       </div>
@@ -101,6 +116,8 @@ export default function Carousel({ images = [], alt = '', style, autoPlay = fals
           />
         ))}
       </div>
+    </div>
+    {cap && <div style={CAPTION}>{cap}</div>}
     </div>
   )
 }

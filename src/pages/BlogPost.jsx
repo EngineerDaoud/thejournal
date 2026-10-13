@@ -73,6 +73,7 @@ export default function BlogPost() {
   }
 
   const covers = parseCovers(post.cover_image)
+  const coverMetas = covers.map((u) => (post.cover_meta && post.cover_meta[u]) || {})
 
   return (
     <>
@@ -138,7 +139,7 @@ export default function BlogPost() {
         <article>
 
           {covers.length > 0 && (
-            <Carousel images={covers} alt={post.title} style={{ marginBottom: 34 }} />
+            <Carousel images={covers} metas={coverMetas} alt={post.title} style={{ marginBottom: 34 }} />
           )}
 
           {post.tldr && (

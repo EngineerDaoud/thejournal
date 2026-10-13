@@ -35,6 +35,7 @@ export default function AdminEditor() {
   const [ctaText, setCtaText] = useState('')
   const [ctaLink, setCtaLink] = useState('')
   const [coverImages, setCoverImages] = useState([])
+  const [coverMeta, setCoverMeta] = useState({}) // { imageUrl: { alt, title, caption } }
   const [category, setCategory] = useState('')
   const [existingCategories, setExistingCategories] = useState([])
   const [addingNewCategory, setAddingNewCategory] = useState(false)
@@ -149,6 +150,7 @@ export default function AdminEditor() {
         setCtaText(data.cta_text || '')
         setCtaLink(data.cta_link || '')
         setCoverImages(parseCovers(data.cover_image))
+        setCoverMeta(data.cover_meta || {})
         setCategory(data.category || 'General')
         setSubcategory(data.subcategory || '')
         setReadingTime(data.reading_time ? String(data.reading_time) : '')
@@ -254,6 +256,10 @@ export default function AdminEditor() {
     setCoverBusy(false)
   }
 
+  function setMeta(url, field, value) {
+    setCoverMeta((prev) => ({ ...prev, [url]: { ...(prev[url] || {}), [field]: value } }))
+  }
+
   function removeCover(index) {
     setCoverImages((prev) => prev.filter((_, i) => i !== index))
   }
@@ -334,6 +340,16 @@ export default function AdminEditor() {
       cta_text: ctaText.trim() || null,
       cta_link: ctaLink.trim() || null,
       cover_image: serializeCovers(coverImages),
+      cover_meta: (() => {
+        const out = {}
+        for (const url of coverImages) {
+          const m = coverMeta[url] || {}
+          const clean = {}
+          for (const k of ['alt', 'title', 'caption']) if ((m[k] || '').trim()) clean[k] = m[k].trim()
+          if (Object.keys(clean).length) out[url] = clean
+        }
+        return Object.keys(out).length ? out : null
+      })(),
       category: category.trim(),
       subcategory: subcategory.trim() || null,
       reading_time: Number(readingTime) > 0 ? Math.round(Number(readingTime)) : null,
@@ -842,7 +858,43 @@ export default function AdminEditor() {
                   </span>
                 )}
               </div>
-             
+
+              {coverImages.length > 0 && (
+                <details className="img-seo" open={coverImages.some((u) => !(coverMeta[u]?.alt || '').trim())}>
+                  <summary>Image SEO: alt text, title, caption</summary>
+                  <p className="img-seo-hint">
+                    <strong>Alt text</strong> is the important one: describe the image in one short sentence
+                    (Google and screen readers use it). Title and caption are optional. If alt text is empty,
+                    the post title is used.
+                  </p>
+                  {coverImages.map((url, i) => (
+                    <div className="img-seo-row" key={`${url}-${i}`}>
+                      <img src={url} alt="" />
+                      <div className="img-seo-fields">
+                        <input
+                          type="text"
+                          placeholder={`Image ${i + 1} alt text (describe the image)`}
+                          value={coverMeta[url]?.alt || ''}
+                          onChange={(e) => setMeta(url, 'alt', e.target.value)}
+                        />
+                        <input
+                          type="text"
+                          placeholder="Image title (optional, shown on hover)"
+                          value={coverMeta[url]?.title || ''}
+                          onChange={(e) => setMeta(url, 'title', e.target.value)}
+                        />
+                        <input
+                          type="text"
+                          placeholder="Caption under the image (optional)"
+                          value={coverMeta[url]?.caption || ''}
+                          onChange={(e) => setMeta(url, 'caption', e.target.value)}
+                        />
+                      </div>
+                    </div>
+                  ))}
+                </details>
+              )}
+
               <input
                 ref={coverInputRef}
                 type="file"

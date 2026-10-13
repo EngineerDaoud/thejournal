@@ -9,6 +9,7 @@ import AuthorAvatarPicker from '../components/AuthorAvatarPicker'
 import KeywordsInput from '../components/KeywordsInput'
 import { splitKeywords, joinKeywords } from '../lib/keywords'
 import { imagePath } from '../lib/upload'
+import SchedulePicker, { formatWhen, toLocalInput } from '../components/SchedulePicker'
 const MAX_COVERS = 4
 
 function slugify(text) {
@@ -18,19 +19,6 @@ function slugify(text) {
     .replace(/[^\w\s-]/g, '')
     .replace(/\s+/g, '-')
     .replace(/-+/g, '-')
-}
-
-// Date -> value for <input type="datetime-local"> in the admin's own time zone.
-function toLocalInput(value) {
-  const d = new Date(value)
-  if (isNaN(d)) return ''
-  const pad = (n) => String(n).padStart(2, '0')
-  return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}`
-}
-
-function formatWhen(local) {
-  const d = new Date(local)
-  return isNaN(d) ? '' : d.toLocaleString([], { dateStyle: 'medium', timeStyle: 'short' })
 }
 
 export default function AdminEditor() {
@@ -373,16 +361,13 @@ export default function AdminEditor() {
     navigate('/admin')
   }
 
-  function handleSchedule() {
-    if (!scheduleAt) {
-      setError('Pick a date and time first.')
-      return
-    }
-    const when = new Date(scheduleAt)
+  function handleSchedule(localValue) {
+    const when = new Date(localValue)
     if (isNaN(when) || when.getTime() <= Date.now() + 30 * 1000) {
       setError('Pick a time in the future.')
       return
     }
+    setScheduleAt(localValue)
     savePost(false, when.toISOString())
   }
 
@@ -402,7 +387,17 @@ export default function AdminEditor() {
           marginBottom: 20,
         }}
       >
-        <h1 style={{ fontSize: 28, margin: 0 }}>{isEditing ? 'Edit post' : 'New post'}</h1>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 18, flexWrap: 'wrap' }}>
+          <h1 style={{ fontSize: 28, margin: 0 }}>{isEditing ? 'Edit post' : 'New post'}</h1>
+          {mode === 'custom' && !published && (
+            <SchedulePicker
+              value={scheduleAt}
+              saving={saving}
+              onSchedule={handleSchedule}
+              onClear={() => setScheduleAt('')}
+            />
+          )}
+        </div>
 
         <div className="mode-switch" style={{ marginBottom: 0 }}>
           {[
@@ -544,37 +539,6 @@ export default function AdminEditor() {
             </button>
           </span>
         </div>
-
-        {!published && (
-          <div
-            className="editor-actionbar"
-            style={{ justifyContent: 'flex-start', gap: 12 }}
-          >
-            <label htmlFor="schedule-at" style={{ fontWeight: 600 }}>
-              Schedule for later
-            </label>
-            <input
-              id="schedule-at"
-              type="datetime-local"
-              value={scheduleAt}
-              min={toLocalInput(new Date())}
-              onChange={(e) => setScheduleAt(e.target.value)}
-              style={{ width: 'auto' }}
-            />
-            <button type="button" className="btn" disabled={saving} onClick={handleSchedule}>
-              {saving ? 'Saving...' : scheduleAt ? 'Schedule' : 'Pick a time'}
-            </button>
-            {scheduleAt && (
-              <button type="button" className="btn btn-outline" onClick={() => setScheduleAt('')}>
-                Clear
-              </button>
-            )}
-            <span style={{ color: 'var(--color-ink-soft)', fontSize: 13 }}>
-              Uses your device time. The post stays hidden until then, then goes live by itself.
-              “Save draft” removes the schedule.
-            </span>
-          </div>
-        )}
 
         {error && (
           <p style={{ color: 'var(--color-danger)', fontSize: 14, marginBottom: 14 }}>{error}</p>

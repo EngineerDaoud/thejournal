@@ -2145,3 +2145,61 @@ a.underline-link:hover,
   text-transform: uppercase;
   color: var(--color-ink-soft);
 }
+
+/* ================= Schedule picker (small button + compact calendar) ================= */
+.sched { position: relative; display: inline-block; }
+.sched-trigger { padding: 8px 16px; font-size: 14px; border-radius: 999px; gap: 8px; }
+.sched-pop {
+  position: absolute;
+  top: calc(100% + 10px);
+  left: 0;
+  z-index: 50;
+  width: 304px;
+  max-width: calc(100vw - 32px);
+  padding: 16px;
+  background: var(--color-bg);
+  border: 1px solid var(--color-line);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-pop);
+}
+.sched-presets { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 14px; }
+.sched-presets button {
+  padding: 5px 11px;
+  font-size: 12.5px;
+  border: 1px solid var(--color-line);
+  border-radius: 999px;
+  background: transparent;
+  color: var(--color-ink);
+  cursor: pointer;
+  transition: background 0.15s ease, color 0.15s ease;
+}
+.sched-presets button:hover { background: var(--color-ink); color: #fff; border-color: var(--color-ink); }
+.sched-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px; font-size: 16px; }
+.sched-head button {
+  width: 30px; height: 30px; font-size: 20px; line-height: 1;
+  border: 1px solid var(--color-line); border-radius: 50%;
+  background: transparent; color: var(--color-ink); cursor: pointer;
+}
+.sched-head button:hover { background: var(--color-ink); color: #fff; }
+.sched-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 3px; text-align: center; }
+.sched-dow { font-size: 11px; letter-spacing: 0.05em; color: var(--color-ink-soft); padding: 4px 0; }
+.sched-day {
+  aspect-ratio: 1; border: 1px solid transparent; border-radius: 50%;
+  background: transparent; color: var(--color-ink); font-size: 14px; cursor: pointer;
+}
+.sched-day:hover:not(:disabled) { background: var(--color-accent-soft); }
+.sched-day.is-today { border-color: var(--color-gold); }
+.sched-day.is-picked, .sched-day.is-picked:hover { background: var(--color-ink); color: #fff; }
+.sched-day:disabled { color: var(--color-line); cursor: not-allowed; }
+.sched-time { display: flex; align-items: center; gap: 8px; margin-top: 14px; padding-top: 14px; border-top: 1px solid var(--color-line); }
+.sched-label { font-size: 13px; color: var(--color-ink-soft); margin-right: auto; }
+.sched-time select {
+  padding: 5px 8px; border: 1px solid var(--color-line); border-radius: 8px;
+  background: var(--color-bg); color: var(--color-ink); width: auto;
+}
+.sched-ampm { display: inline-flex; border: 1px solid var(--color-line); border-radius: 999px; overflow: hidden; }
+.sched-ampm button { padding: 5px 10px; font-size: 12.5px; border: 0; background: transparent; color: var(--color-ink); cursor: pointer; }
+.sched-ampm button.on { background: var(--color-ink); color: #fff; }
+.sched-summary { margin: 12px 0 0; font-size: 12.5px; color: var(--color-ink-soft); }
+.sched-foot { display: flex; justify-content: flex-end; gap: 8px; margin-top: 12px; }
+.sched-foot .btn { padding: 7px 15px; font-size: 13px; border-radius: 999px; }

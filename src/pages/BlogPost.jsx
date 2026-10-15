@@ -13,6 +13,8 @@ import CommentForm from '../components/CommentForm'
 import CommentsPanel from '../components/CommentsPanel'
 import RelatedPosts from '../components/RelatedPosts'
 import PostKeywords from '../components/PostKeywords'
+import PostInfoBoxes from '../components/PostInfoBoxes'
+import { splitPostInfo } from '../lib/postInfo'
 import { resolveLink } from '../lib/links'
 
 const BADGE = { display: 'inline-block', fontSize: 13, fontWeight: 600, lineHeight: 1.4, background: 'var(--color-ink)', color: '#fff', padding: '5px 12px', borderRadius: 4 }
@@ -73,6 +75,13 @@ export default function BlogPost() {
   }
 
   const covers = parseCovers(post.cover_image)
+  // Search Intent / Target Audience: from the editor fields; older posts that still have them as
+  // "Search Intent: ..." paragraphs keep working through the fallback.
+  const { body: bodyBlocks, info: infoFallback } = splitPostInfo(post.content || [])
+  const infoBoxes = [
+    post.search_intent?.trim() ? { title: 'Search Intent', text: post.search_intent.trim() } : infoFallback.find((i) => i.title === 'Search Intent'),
+    post.target_audience?.trim() ? { title: 'Target Audience', text: post.target_audience.trim() } : infoFallback.find((i) => i.title === 'Target Audience'),
+  ].filter(Boolean)
   const coverMetas = covers.map((u) => (post.cover_meta && post.cover_meta[u]) || {})
 
   return (
@@ -161,7 +170,7 @@ export default function BlogPost() {
 
           <AdSlot />
 
-          <PostRenderer blocks={post.content || []} />
+          <PostRenderer blocks={bodyBlocks} />
 
           {post.cta_text && resolveLink(post.cta_link) && (
             <div style={{ margin: '48px 0', textAlign: 'center' }}>
@@ -193,6 +202,7 @@ export default function BlogPost() {
         <CommentsPanel postId={post.id} refreshKey={commentKey} />
         <PostKeywords keywords={post.keywords} />
         <AdSlot label="Advertisement" />
+        <PostInfoBoxes items={infoBoxes} />
       </aside>
     </div>
 

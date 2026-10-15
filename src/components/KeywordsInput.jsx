@@ -2,7 +2,7 @@ import { useRef, useState } from 'react'
 
 // Type a keyword, press Enter (or comma) to add it as a chip. Add as many as
 // you like. Drag a chip to reorder it, or click its x to remove it.
-export default function KeywordsInput({ value = [], onChange, placeholder, hint }) {
+export default function KeywordsInput({ value = [], onChange, placeholder, hint, minHeight = 46 }) {
   const [draft, setDraft] = useState('')
   const dragIndex = useRef(null)
   const [overIndex, setOverIndex] = useState(null)
@@ -59,8 +59,11 @@ export default function KeywordsInput({ value = [], onChange, placeholder, hint 
           border: '1px solid var(--color-line)',
           borderRadius: 'var(--radius)',
           background: 'var(--color-surface)',
-          minHeight: 46,
+          minHeight,
+          boxSizing: 'border-box',
+          alignContent: 'flex-start',
           alignItems: 'center',
+          width: '100%',
         }}
       >
         {value.map((word, i) => (
@@ -120,8 +123,8 @@ export default function KeywordsInput({ value = [], onChange, placeholder, hint 
           onBlur={addFromDraft}
           placeholder={value.length === 0 ? placeholder || 'Type a keyword and press Enter' : 'Add another...'}
           style={{
-            flex: '1 1 140px',
-            minWidth: 140,
+            flex: '1 1 100px',
+            minWidth: 100,
             border: 'none',
             outline: 'none',
             padding: '4px 2px',

@@ -8,6 +8,7 @@ import { parseCovers, serializeCovers } from '../lib/covers'
 import AuthorAvatarPicker from '../components/AuthorAvatarPicker'
 import KeywordsInput from '../components/KeywordsInput'
 import { splitKeywords, joinKeywords } from '../lib/keywords'
+import { splitItems } from '../lib/postInfo'
 import { imagePath } from '../lib/upload'
 import SchedulePicker, { formatWhen, toLocalInput } from '../components/SchedulePicker'
 const MAX_COVERS = 4
@@ -32,6 +33,8 @@ export default function AdminEditor() {
   const [primaryKw, setPrimaryKw] = useState([])
   const [secondaryKw, setSecondaryKw] = useState([])
   const [tldr, setTldr] = useState('')
+  const [searchIntent, setSearchIntent] = useState([])
+  const [targetAudience, setTargetAudience] = useState([])
   const [ctaText, setCtaText] = useState('')
   const [ctaLink, setCtaLink] = useState('')
   const [coverImages, setCoverImages] = useState([])
@@ -147,6 +150,8 @@ export default function AdminEditor() {
           setSecondaryKw(kw.secondary)
         }
         setTldr(data.tldr || '')
+        setSearchIntent(splitItems(data.search_intent))
+        setTargetAudience(splitItems(data.target_audience))
         setCtaText(data.cta_text || '')
         setCtaLink(data.cta_link || '')
         setCoverImages(parseCovers(data.cover_image))
@@ -191,6 +196,8 @@ export default function AdminEditor() {
       if (!slugTouched.current) setSlug(slugify(parsed.title))
     }
     if (parsed.tldr) setTldr(parsed.tldr)
+    if (parsed.searchIntent.length) setSearchIntent(parsed.searchIntent)
+    if (parsed.targetAudience.length) setTargetAudience(parsed.targetAudience)
     if (parsed.ctaText) setCtaText(parsed.ctaText)
     if (parsed.excerpt && !excerpt.trim()) setExcerpt(parsed.excerpt)
     setBlocks(parsed.blocks.length ? parsed.blocks : [newTextBlock('')])
@@ -209,7 +216,7 @@ export default function AdminEditor() {
   }
 
   async function handleCopyPost() {
-    const md = postToMarkdown({ title, tldr, blocks, ctaText })
+    const md = postToMarkdown({ title, tldr, blocks, ctaText, searchIntent, targetAudience })
     try {
       await navigator.clipboard.writeText(md)
     } catch {
@@ -337,6 +344,8 @@ export default function AdminEditor() {
       excerpt: excerpt.trim(),
       keywords: joinKeywords(primaryKw, secondaryKw),
       tldr: tldr.trim() || null,
+      search_intent: searchIntent.length ? searchIntent.join('\n') : null,
+      target_audience: targetAudience.length ? targetAudience.join('\n') : null,
       cta_text: ctaText.trim() || null,
       cta_link: ctaLink.trim() || null,
       cover_image: serializeCovers(coverImages),
@@ -456,8 +465,8 @@ export default function AdminEditor() {
             Quick paste: full article
           </label>
           <p style={{ fontSize: 13, color: 'var(--color-ink-soft)', marginBottom: 10 }}>
-            Paste the whole article (Markdown) here. Title, TL;DR, headings, paragraphs, tables, FAQs
-            and images go into their own sections automatically.
+            Paste the whole article (Markdown) here. Title, TL;DR, Search Intent, Target Audience, headings,
+            paragraphs, tables, FAQs and images go into their own sections automatically.
           </p>
           <textarea
             rows={5}
@@ -911,8 +920,8 @@ export default function AdminEditor() {
           </div>
         </div>
 
-        <div className="field-grid field-compact">
-          <div className="field field-wide">
+        <div className="field-grid field-grid-3 field-compact">
+          <div className="field">
             <label htmlFor="excerpt">
               Short excerpt (shown in article listing)
               <span style={{ float: 'right', color: excerpt.length > 160 ? 'var(--color-danger)' : 'var(--color-ink-soft)' }}>
@@ -925,8 +934,16 @@ export default function AdminEditor() {
               placeholder="One or two sentences that make people want to open the article"
               value={excerpt}
               onChange={(e) => setExcerpt(e.target.value)}
-              style={{ resize: 'vertical', minHeight: 84 }}
+              style={{ resize: 'vertical', height: 126, minHeight: 126, boxSizing: 'border-box' }}
             />
+          </div>
+          <div className="field">
+            <label>Search Intent</label>
+            <KeywordsInput value={searchIntent} onChange={setSearchIntent} placeholder="Type and press Enter" minHeight={126} />
+          </div>
+          <div className="field">
+            <label>Target Audience</label>
+            <KeywordsInput value={targetAudience} onChange={setTargetAudience} placeholder="Type and press Enter" minHeight={126} />
           </div>
         </div>
 

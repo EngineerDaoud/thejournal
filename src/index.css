@@ -343,6 +343,10 @@ select:focus { border-color: var(--color-accent); box-shadow: 0 0 0 3px var(--co
 @media (max-width: 720px) {
   .field-grid { grid-template-columns: minmax(0, 1fr); }
 }
+.field-grid-3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+@media (max-width: 900px) {
+  .field-grid-3 { grid-template-columns: minmax(0, 1fr); }
+}
 
 .field-compact label { font-size: 12px; margin-bottom: 4px; }
 .field-compact input[type='text'],
@@ -2225,3 +2229,12 @@ input[type="number"] {
 input[type="number"]:focus { border-color: var(--color-accent); outline: none; }
 .field-compact input[type="number"] { padding: 8px 11px; font-size: 14px; border-radius: var(--radius-md); }
 .img-seo-warn { color: var(--color-gold); font-weight: 400; font-size: 12.5px; }
+/* ---- Search Intent / Target Audience black boxes (right column) ---- */
+.info-box .kw-title { margin-bottom: 10px; }
+.info-box-text {
+  color: #fff;
+  font-size: 14.5px;
+  line-height: 1.6;
+  overflow-wrap: anywhere;
+}
+.info-box-text * { color: #fff; }

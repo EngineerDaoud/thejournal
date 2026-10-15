@@ -51,11 +51,50 @@ function parseTableRow(line) {
     .map((cell) => cell.trim())
 }
 
+// ---- Search Intent / Target Audience (go into their own boxes, not into the article body) ----
+const INFO_LABEL_RE = /^(?:[-*+]\s+)?(?:\*\*|__)?\s*(search\s+intent|target\s+audience)\s*(?:\*\*|__)?\s*:\s*(?:\*\*|__)?\s*(.*)$/i
+const INFO_HEADING_RE = /^(search\s+intent|target\s+audience)\s*:?$/i
+
+function infoKey(label) {
+  return /intent/i.test(label) ? 'searchIntent' : 'targetAudience'
+}
+
+// "Small business owners, founders, and managers." -> ['Small business owners', 'founders', 'managers']
+function splitInfoItems(text) {
+  return String(text || '')
+    .replace(/\*\*|__/g, '')
+    .split(/[,;\n]/)
+    .map((x) =>
+      x
+        .trim()
+        .replace(/^[-*+]\s+/, '')
+        .replace(/^(and|&)\s+/i, '')
+        .replace(/[.]+$/, '')
+        .trim(),
+    )
+    .filter(Boolean)
+}
+
+// Reads the lines that belong to a label whose value starts on the next line (list or paragraph).
+function collectInfoLines(lines, startIndex) {
+  let i = startIndex
+  while (i < lines.length && lines[i].trim() === '') i++
+  const parts = []
+  while (i < lines.length) {
+    const t = lines[i].trim()
+    if (t === '' || /^#{1,4}\s/.test(t) || INFO_LABEL_RE.test(t)) break
+    parts.push(t)
+    i++
+  }
+  return { text: parts.join('\n'), nextIndex: i }
+}
+
 export function parseMarkdownArticles(raw) {
   const lines = raw.replace(/\r\n/g, '\n').split('\n')
   let title = ''
   let tldr = ''
   let ctaText = ''
+  const info = { searchIntent: [], targetAudience: [] }
   const blocks = []
   let i = 0
 
@@ -83,6 +122,13 @@ export function parseMarkdownArticles(raw) {
     if (headingMatch) {
       const level = headingMatch[1].length
       const headingText = headingMatch[2].trim()
+
+      if (INFO_HEADING_RE.test(headingText)) {
+        const { text, nextIndex } = collectInfoLines(lines, i + 1)
+        info[infoKey(headingText)].push(...splitInfoItems(text))
+        i = nextIndex
+        continue
+      }
 
       if (/^tl;?dr/i.test(headingText)) {
         const { text, nextIndex } = consumeParagraph(lines, i + 1)
@@ -178,6 +224,20 @@ export function parseMarkdownArticles(raw) {
       continue
     }
 
+    const infoLine = trimmed.match(INFO_LABEL_RE)
+    if (infoLine) {
+      let value = infoLine[2]
+      let next = i + 1
+      if (!value.trim()) {
+        const r = collectInfoLines(lines, i + 1)
+        value = r.text
+        next = r.nextIndex
+      }
+      info[infoKey(infoLine[1])].push(...splitInfoItems(value))
+      i = next
+      continue
+    }
+
     const tldrInline = trimmed.match(/^\*\*tl;?dr:?\*\*\s*(.*)/i)
     if (tldrInline) {
       let text = tldrInline[1].trim()
@@ -204,15 +264,17 @@ export function parseMarkdownArticles(raw) {
     ? firstText.content.replace(/\s+/g, ' ').slice(0, 160).trim()
     : ''
 
-  return { title, tldr, ctaText, excerpt, blocks }
+  return { title, tldr, ctaText, excerpt, blocks, searchIntent: info.searchIntent, targetAudience: info.targetAudience }
 }
 
 // Reverse of the parser: turns the current post into Markdown so it can be
 // copied and pasted somewhere else (or pasted back into the editor later).
-export function postToMarkdown({ title, tldr, blocks, ctaText }) {
+export function postToMarkdown({ title, tldr, blocks, ctaText, searchIntent = [], targetAudience = [] }) {
   const out = []
   if (title) out.push(`# ${title}`)
   if (tldr) out.push(`## TL;DR\n${tldr}`)
+  if (searchIntent.length) out.push(`**Search Intent:** ${searchIntent.join(', ')}`)
+  if (targetAudience.length) out.push(`**Target Audience:** ${targetAudience.join(', ')}`)
 
   for (const b of blocks) {
     if (b.type === 'html' || (b.htmlMode && b.html?.trim())) {

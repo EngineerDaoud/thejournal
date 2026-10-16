@@ -7,6 +7,7 @@ import Dropdown from '../components/Dropdown'
 import { parseCovers, serializeCovers } from '../lib/covers'
 import AuthorAvatarPicker from '../components/AuthorAvatarPicker'
 import KeywordsInput from '../components/KeywordsInput'
+import ArticlePreview from '../components/ArticlePreview'
 import { splitKeywords, joinKeywords } from '../lib/keywords'
 import { splitItems } from '../lib/postInfo'
 import { imagePath } from '../lib/upload'
@@ -57,6 +58,7 @@ export default function AdminEditor() {
   const [blocks, setBlocks] = useState([newTextBlock('')])
   const [loading, setLoading] = useState(isEditing)
   const [saving, setSaving] = useState(false)
+  const [showPreview, setShowPreview] = useState(false)
   const [error, setError] = useState('')
   const [pasteText, setPasteText] = useState('')
   const [pasteMsg, setPasteMsg] = useState('')
@@ -530,6 +532,9 @@ export default function AdminEditor() {
                 View
               </a>
             )}
+            <button type="button" className="btn btn-outline" onClick={() => setShowPreview(true)}>
+              Preview
+            </button>
             <button type="button" className="btn btn-outline" onClick={handleCopyPost}>
               {copied ? 'Copied!' : 'Copy'}
             </button>
@@ -981,6 +986,20 @@ export default function AdminEditor() {
           </div>
         </div>
       </form>
+      )}
+
+      {showPreview && (
+        <ArticlePreview
+          title={title}
+          author={author}
+          category={category}
+          readingTime={readingTime}
+          tldr={tldr}
+          blocks={blocks}
+          coverImages={coverImages}
+          coverMeta={coverMeta}
+          onClose={() => setShowPreview(false)}
+        />
       )}
     </div>
   )

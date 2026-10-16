@@ -4,6 +4,7 @@ import { supabase } from '../lib/supabaseClient'
 import { publishDuePosts } from '../lib/posts'
 import { useAuth } from '../context/AuthContext'
 import { countPendingComments } from '../lib/comments'
+import { countPendingSubmissions } from '../lib/submissions'
 import AdminAvatar from '../components/AdminAvatar'
 import { confirmDialog } from '../components/ConfirmDialog'
 
@@ -12,6 +13,7 @@ export default function AdminDashboard() {
   const [loading, setLoading] = useState(true)
   const [filter, setFilter] = useState('all')
   const [pending, setPending] = useState(0)
+  const [pendingArticles, setPendingArticles] = useState(0)
   const { signOut } = useAuth()
   const navigate = useNavigate()
 
@@ -30,6 +32,7 @@ export default function AdminDashboard() {
     document.title = 'Admin — The Journal'
     loadPosts()
     countPendingComments().then(setPending)
+    countPendingSubmissions().then(setPendingArticles)
   }, [])
 
   async function handleDelete(id, title) {
@@ -93,6 +96,9 @@ export default function AdminDashboard() {
         </Link>
         <Link to="/admin/comments" className="btn btn-outline">
           Comments{pending > 0 ? ` (${pending} waiting)` : ''}
+        </Link>
+        <Link to="/admin/submissions" className="btn btn-outline">
+          Reader articles{pendingArticles > 0 ? ` (${pendingArticles} waiting)` : ''}
         </Link>
       </div>
 

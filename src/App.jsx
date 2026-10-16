@@ -18,6 +18,7 @@ const Author = lazy(() => import('./pages/Author'))
 const About = lazy(() => import('./pages/About'))
 const Contact = lazy(() => import('./pages/Contact'))
 const EditorialPolicy = lazy(() => import('./pages/EditorialPolicy'))
+const WriterGuidelines = lazy(() => import('./pages/WriterGuidelines'))
 const ImageCredits = lazy(() => import('./pages/ImageCredits'))
 const Privacy = lazy(() => import('./pages/Privacy'))
 const Terms = lazy(() => import('./pages/Terms'))
@@ -27,6 +28,8 @@ const AdminDashboard = lazy(() => import('./pages/AdminDashboard'))
 const AdminEditor = lazy(() => import('./pages/AdminEditor'))
 const AdminCategories = lazy(() => import('./pages/AdminCategories'))
 const AdminComments = lazy(() => import('./pages/AdminComments'))
+const AdminSubmissions = lazy(() => import('./pages/AdminSubmissions'))
+const WriteArticle = lazy(() => import('./pages/WriteArticle'))
 const NotFound = lazy(() => import('./pages/NotFound'))
 
 // Once the home page has appeared, the other public pages are downloaded quietly in the
@@ -74,8 +77,10 @@ export default function App() {
           <Route path="/blog/:slug" element={<BlogPost />} />
           <Route path="/author/:name" element={<Author />} />
           <Route path="/about" element={<About />} />
+          <Route path="/write" element={<WriteArticle />} />
           <Route path="/contact" element={<Contact />} />
           <Route path="/editorial-policy" element={<EditorialPolicy />} />
+          <Route path="/writer-guidelines" element={<WriterGuidelines />} />
           <Route path="/image-credits" element={<ImageCredits />} />
           <Route path="/privacy-policy" element={<Privacy />} />
           <Route path="/terms-and-conditions" element={<Terms />} />
@@ -111,6 +116,14 @@ export default function App() {
             element={
               <ProtectedRoute>
                 <AdminComments />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/admin/submissions"
+            element={
+              <ProtectedRoute>
+                <AdminSubmissions />
               </ProtectedRoute>
             }
           />

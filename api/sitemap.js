@@ -9,6 +9,8 @@ const STATIC_PAGES = [
   '/about',
   '/contact',
   '/editorial-policy',
+  '/write',
+  '/writer-guidelines',
   '/image-credits',
   '/privacy-policy',
   '/terms-and-conditions',

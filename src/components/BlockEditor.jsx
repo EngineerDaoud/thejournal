@@ -113,8 +113,8 @@ export function newFaqBlock() {
   }
 }
 
-async function uploadImage(file) {
-  const { path, error: badFile } = imagePath(file)
+async function uploadImage(file, folder = '') {
+  const { path, error: badFile } = imagePath(file, folder)
   if (badFile) throw new Error(badFile)
   const { error } = await supabase.storage.from('blog-images').upload(path, file, {
     cacheControl: '3600',
@@ -139,6 +139,8 @@ async function uploadDownloadFile(file) {
   const { data } = supabase.storage.from('blog-images').getPublicUrl(path, { download: file.name })
   return { url: data.publicUrl, filename: file.name }
 }
+
+const MAX_READER_IMAGES = 8
 
 const SITE_PAGES = [
   { label: 'Page: Article(all posts)', url: '/blog' },
@@ -794,7 +796,7 @@ function HtmlCodeEditor({ value, onChange, seeds = [], hint }) {
 // Word-style formatting panel. It lives in the left margin, stays in view
 // while scrolling, and works on whichever block was clicked last — or on the
 // whole post when "All content" is ticked.
-function EditorSidebar({ registry, active, setActive, blocks, onChange, targets, onInsert, onInsertImage }) {
+function EditorSidebar({ registry, active, setActive, blocks, onChange, targets, onInsert, onInsertImage, restricted = false }) {
   const [scope, setScope] = useState('selected') // 'selected' | 'all'
   const [msg, setMsg] = useState('')
   const [fmt, setFmt] = useState({ font: '', size: 0, bold: false, italic: false, underline: false, strike: false, ul: false, ol: false })
@@ -1324,6 +1326,7 @@ function EditorSidebar({ registry, active, setActive, blocks, onChange, targets,
         </div>
       </SbSection>
 
+      {!restricted && (
       <SbSection title="Add more fonts" defaultOpen={false}>
         <div style={sbHintStyle}>Upload your own font file (.woff2, .woff, .ttf, .otf) or add any font from Google Fonts by name.</div>
         <span style={sbLabelStyle}>Upload font file</span>
@@ -1380,6 +1383,7 @@ function EditorSidebar({ registry, active, setActive, blocks, onChange, targets,
           </>
         )}
       </SbSection>
+      )}
 
       <SbSection title="Text color">
         <div style={{ display: 'flex', gap: 7, flexWrap: 'wrap', marginBottom: 10 }}>
@@ -1755,7 +1759,7 @@ function EditorSidebar({ registry, active, setActive, blocks, onChange, targets,
             ['faq', 'FAQs'],
             ['compare', 'Compare'],
             ['download', 'Download'],
-          ].map(([type, label]) => (
+          ].filter(([type]) => !(restricted && (type === 'html' || type === 'download'))).map(([type, label]) => (
             <button
               key={type}
               type="button"
@@ -1794,7 +1798,9 @@ function EditorSidebar({ registry, active, setActive, blocks, onChange, targets,
 }
 
 
-export default function BlockEditor({ blocks, onChange, tldr, onTldrChange }) {
+// restricted = the version readers get on the "Write for us" page: same editor, but no
+// custom HTML, image/file uploads, downloads or font uploads.
+export default function BlockEditor({ blocks, onChange, tldr, onTldrChange, restricted = false }) {
   const hasTldr = typeof tldr === 'string' && typeof onTldrChange === 'function'
   // Box style / spacing / alignment picked for the TL;DR while editing. The
   // TL;DR is saved as a single line of text, so only the inline formatting
@@ -1870,6 +1876,7 @@ export default function BlockEditor({ blocks, onChange, tldr, onTldrChange }) {
       download: newDownloadBlock,
     }[type]
     if (!make) return
+    if (restricted && (type === 'html' || type === 'download')) return
     const nb = make()
     const afterId = active?.blockId
     onChange((prev) => {
@@ -1928,12 +1935,21 @@ export default function BlockEditor({ blocks, onChange, tldr, onTldrChange }) {
 
   async function handleFiles(files, atIndex = null) {
     if (!files || !files.length) return
+    // Readers: uploads go to a separate "submissions/" folder and are capped.
+    const folder = restricted ? 'submissions/' : ''
+    const picked = Array.from(files).filter((f) => f.type.startsWith('image/'))
+    if (restricted) {
+      const have = blocks.filter((b) => b.type === 'image').length
+      if (have + picked.length > MAX_READER_IMAGES) {
+        alert(`You can add up to ${MAX_READER_IMAGES} images to one article.`)
+        return
+      }
+    }
     setUploading(true)
     try {
       const uploaded = []
-      for (const file of Array.from(files)) {
-        if (!file.type.startsWith('image/')) continue
-        const url = await uploadImage(file)
+      for (const file of picked) {
+        const url = await uploadImage(file, folder)
         uploaded.push(newImageBlock(url, ''))
       }
       if (uploaded.length) {
@@ -2079,6 +2095,7 @@ export default function BlockEditor({ blocks, onChange, tldr, onTldrChange }) {
           targets={targets}
           onInsert={insertBlock}
           onInsertImage={insertImages}
+          restricted={restricted}
         />
       </div>
 
@@ -2257,7 +2274,7 @@ export default function BlockEditor({ blocks, onChange, tldr, onTldrChange }) {
 
           {block.type === 'table' && (
             <div>
-              <ModeSwitch htmlMode={Boolean(block.htmlMode)} onChange={(m) => updateBlock(block.id, { htmlMode: m })} />
+              {!restricted && <ModeSwitch htmlMode={Boolean(block.htmlMode)} onChange={(m) => updateBlock(block.id, { htmlMode: m })} />}
               {block.htmlMode ? (
                 <HtmlCodeEditor
                   value={block.html}
@@ -2352,7 +2369,7 @@ export default function BlockEditor({ blocks, onChange, tldr, onTldrChange }) {
 
           {block.type === 'chart' && (
             <div>
-              <ModeSwitch htmlMode={Boolean(block.htmlMode)} onChange={(m) => updateBlock(block.id, { htmlMode: m })} />
+              {!restricted && <ModeSwitch htmlMode={Boolean(block.htmlMode)} onChange={(m) => updateBlock(block.id, { htmlMode: m })} />}
               {block.htmlMode ? (
                 <HtmlCodeEditor
                   value={block.html}
@@ -2642,6 +2659,7 @@ export default function BlockEditor({ blocks, onChange, tldr, onTldrChange }) {
         >
           + Add chart
         </button>
+        {!restricted && (
         <button
           type="button"
           className="btn btn-outline"
@@ -2649,6 +2667,7 @@ export default function BlockEditor({ blocks, onChange, tldr, onTldrChange }) {
         >
           + Add HTML
         </button>
+        )}
         <button
           type="button"
           className="btn btn-outline"
@@ -2663,6 +2682,7 @@ export default function BlockEditor({ blocks, onChange, tldr, onTldrChange }) {
         >
           + Add comparison
         </button>
+        {!restricted && (
         <button
           type="button"
           className="btn btn-outline"
@@ -2670,6 +2690,7 @@ export default function BlockEditor({ blocks, onChange, tldr, onTldrChange }) {
         >
           + Add download
         </button>
+        )}
       </div>
       </div>
     </div>

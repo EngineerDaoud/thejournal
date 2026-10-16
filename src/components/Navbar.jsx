@@ -116,6 +116,7 @@ export default function Navbar() {
   const mobileLinks = (
     <>
       <Link to="/blog" style={linkStyle(isActive('/blog'))}>Articles</Link>
+      <Link to="/write" style={linkStyle(isActive('/write'))}>Write for us</Link>
       {tree.map((cat) => (
         <div key={cat.name} style={{ paddingLeft: 14 }}>
           <Link to={catLink(cat.name)} style={{ ...linkStyle(false), display: 'inline-block', fontSize: 14 }}>
@@ -174,6 +175,9 @@ export default function Navbar() {
 
         <nav className="nav-links" style={{ display: 'flex', alignItems: 'center', gap: 24, fontSize: 15 }}>
           {desktopLinks}
+          <Link to="/write" className="btn" style={{ fontSize: 13, padding: '7px 14px', whiteSpace: 'nowrap' }}>
+            Write for us
+          </Link>
           <a
             href="/admin"
             onClick={handleAdminClick}

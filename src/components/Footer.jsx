@@ -63,6 +63,7 @@ export default function Footer() {
             <Link to="/about">About Us</Link>
             <Link to="/contact">Contact Us</Link>
             <Link to="/editorial-policy">Editorial Policy</Link>
+            <Link to="/writer-guidelines">Writer Guidelines</Link>
             <Link to="/image-credits">Image &amp; Copyright</Link>
           </nav>
 

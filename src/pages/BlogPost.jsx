@@ -16,6 +16,7 @@ import PostKeywords from '../components/PostKeywords'
 import PostInfoBoxes from '../components/PostInfoBoxes'
 import LatestPosts from '../components/LatestPosts'
 import LiveViewers from '../components/LiveViewers'
+import { formatViews } from '../components/TrendingCard'
 import { splitPostInfo } from '../lib/postInfo'
 import { resolveLink } from '../lib/links'
 
@@ -125,6 +126,26 @@ export default function BlogPost() {
         {post.reading_time > 0 && (
           <span style={{ ...BADGE, marginLeft: 10, cursor: 'default' }}>
             {post.reading_time} min read
+          </span>
+        )}
+        {post.published && (
+          <span style={{ ...BADGE, marginLeft: 10, cursor: 'default' }} title="Total views">
+            <svg
+              width="16"
+              height="16"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              aria-hidden="true"
+              style={{ verticalAlign: '-3px', marginRight: 7 }}
+            >
+              <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
+              <circle cx="12" cy="12" r="3" />
+            </svg>
+            {formatViews(post.views)}
           </span>
         )}
         <LiveViewers title={post.title} style={{ ...BADGE, marginLeft: 10, cursor: 'default' }} />

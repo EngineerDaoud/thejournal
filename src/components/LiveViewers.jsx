@@ -46,7 +46,7 @@ export default function LiveViewers({ title, style }) {
           verticalAlign: 'middle',
         }}
       />
-      {count} reading now
+      {count} Live Viewer
     </span>
   )
 }

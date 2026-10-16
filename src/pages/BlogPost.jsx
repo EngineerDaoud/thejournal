@@ -125,7 +125,7 @@ export default function BlogPost() {
         )}
         {post.reading_time > 0 && (
           <span style={{ ...BADGE, marginLeft: 10, cursor: 'default' }}>
-            {post.reading_time} min read
+            Estimated reading time: {post.reading_time} min
           </span>
         )}
         {post.published && (

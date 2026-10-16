@@ -14,6 +14,8 @@ import CommentsPanel from '../components/CommentsPanel'
 import RelatedPosts from '../components/RelatedPosts'
 import PostKeywords from '../components/PostKeywords'
 import PostInfoBoxes from '../components/PostInfoBoxes'
+import LatestPosts from '../components/LatestPosts'
+import LiveViewers from '../components/LiveViewers'
 import { splitPostInfo } from '../lib/postInfo'
 import { resolveLink } from '../lib/links'
 
@@ -125,6 +127,7 @@ export default function BlogPost() {
             {post.reading_time} min read
           </span>
         )}
+        <LiveViewers title={post.title} style={{ ...BADGE, marginLeft: 10, cursor: 'default' }} />
         <div style={{ fontSize: 13, color: 'var(--color-ink-soft)', margin: '14px 0 26px', lineHeight: 1.4 }}>
           {post.author && (
             <>
@@ -203,6 +206,7 @@ export default function BlogPost() {
         <PostKeywords keywords={post.keywords} />
         <AdSlot label="Advertisement" />
         <PostInfoBoxes items={infoBoxes} />
+        <LatestPosts currentId={post.id} limit={5} />
       </aside>
     </div>
 

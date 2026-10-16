@@ -2238,3 +2238,38 @@ input[type="number"]:focus { border-color: var(--color-accent); outline: none; }
   overflow-wrap: anywhere;
 }
 .info-box-text * { color: #fff; }
+
+/* ---- Latest Posts (right column, under Target Audience) ---- */
+.latest-box { margin-top: 0; }
+.latest-list { list-style: none; margin: 0; padding: 0; }
+.latest-list li + li { border-top: 1px solid rgba(255, 255, 255, 0.18); }
+.latest-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 0;
+  color: #fff;
+  text-decoration: none;
+}
+.latest-list li:first-child .latest-item { padding-top: 2px; }
+.latest-list li:last-child .latest-item { padding-bottom: 0; }
+.latest-thumb {
+  width: 64px;
+  height: 48px;
+  object-fit: cover;
+  border-radius: 8px;
+  flex: none;
+  background: #222;
+}
+.latest-text { display: flex; flex-direction: column; gap: 4px; min-width: 0; }
+.latest-title {
+  font-size: 14.5px;
+  line-height: 1.35;
+  color: #fff;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+.latest-date { font-size: 12px; color: rgba(255, 255, 255, 0.6); }
+.latest-item:hover .latest-title { text-decoration: underline; }

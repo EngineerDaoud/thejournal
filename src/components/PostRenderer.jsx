@@ -65,7 +65,8 @@ function renderBlock(block) {
           return (
             <div
               key={block.id}
-              className={themed ? `themed-block themed-${block.theme}` : undefined}
+              className={`post-text${themed ? ` themed-block themed-${block.theme}` : ''}`}
+              data-align={block.align || 'justify'}
               style={{
                 textAlign: block.align || 'justify',
                 hyphens: 'auto',
@@ -82,6 +83,7 @@ function renderBlock(block) {
           return (
             <h2
               key={block.id}
+              className="post-h2"
               style={{
                 fontSize: 30,
                 fontWeight: 700,
@@ -89,7 +91,7 @@ function renderBlock(block) {
                 letterSpacing: '-0.01em',
                 color: 'var(--color-ink)',
                 margin: '48px 0 20px',
-                textAlign: block.align || 'left',
+                textAlign: !block.align || block.align === 'justify' ? 'left' : block.align,
                 ...(block.font && fontCss(block.font) ? (ensureFont(block.font), { fontFamily: fontCss(block.font) }) : {}),
                 ...(block.color ? { color: block.color } : {}),
               }}

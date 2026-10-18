@@ -106,6 +106,7 @@ export default function BlogPost() {
             <strong>Draft preview.</strong> Not live yet, only you (admin) can see this page.
           </div>
         )}
+        <div className="post-badges">
         <Link
           to={`/blog?category=${encodeURIComponent(post.category || 'General')}`}
           style={BADGE}
@@ -114,7 +115,7 @@ export default function BlogPost() {
         </Link>
         {post.subcategory && (
           <>
-            <span style={{ color: 'var(--color-ink-soft)', margin: '0 8px' }}>&rsaquo;</span>
+            <span style={{ color: 'var(--color-ink-soft)' }}>&rsaquo;</span>
             <Link
               to={`/blog?category=${encodeURIComponent(post.category || 'General')}&sub=${encodeURIComponent(post.subcategory)}`}
               style={BADGE}
@@ -124,12 +125,12 @@ export default function BlogPost() {
           </>
         )}
         {post.reading_time > 0 && (
-          <span style={{ ...BADGE, marginLeft: 10, cursor: 'default' }}>
+          <span style={{ ...BADGE, cursor: 'default' }}>
             Estimated reading time: {post.reading_time} min
           </span>
         )}
         {post.published && (
-          <span style={{ ...BADGE, marginLeft: 10, cursor: 'default' }} title="Total views">
+          <span style={{ ...BADGE, cursor: 'default' }} title="Total views">
             <svg
               width="16"
               height="16"
@@ -148,7 +149,8 @@ export default function BlogPost() {
             {formatViews(post.views)}
           </span>
         )}
-        <LiveViewers title={post.title} style={{ ...BADGE, marginLeft: 10, cursor: 'default' }} />
+        <LiveViewers title={post.title} style={{ ...BADGE, cursor: 'default' }} />
+        </div>
         <div style={{ fontSize: 13, color: 'var(--color-ink-soft)', margin: '14px 0 26px', lineHeight: 1.4 }}>
           {post.author && (
             <>

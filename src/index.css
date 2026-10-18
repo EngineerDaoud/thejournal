@@ -2275,3 +2275,64 @@ input[type="number"]:focus { border-color: var(--color-accent); outline: none; }
 .hero-latest-item .latest-item-title { color: var(--color-ink); }
 .hero-latest-date { color: var(--color-ink-soft); }
 .hero-latest-item.latest-item:hover .hero-latest-date { color: #fff; }
+
+/* ================= Phone fixes: article badges, headings, justified text, Trending cards ================= */
+/* badges (category, reading time, views, live viewers) sit in one wrapping row with equal gaps */
+.post-badges { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; }
+.post-badges > * { margin: 0 !important; }
+
+@media (max-width: 720px) {
+  /* justified text makes big gaps between words on narrow screens: left-align it on phones */
+  .post-text[data-align="justify"] { text-align: left !important; hyphens: manual !important; -webkit-hyphens: manual !important; }
+  .info-page p, .info-page li { text-align: left; hyphens: manual; -webkit-hyphens: manual; }
+  /* smaller headings and tighter spacing inside articles */
+  .post-h2 { font-size: 24px !important; line-height: 1.25 !important; margin: 34px 0 14px !important; overflow-wrap: anywhere; }
+  .post-badges { gap: 8px; }
+  .post-badges > * { font-size: 12.5px !important; padding: 5px 10px !important; }
+}
+
+/* Trending cards: one card per row on phones, all the same shape, text never squeezed */
+@media (max-width: 620px) {
+  .Articles-hero-side { grid-template-columns: minmax(0, 1fr); gap: 16px; }
+  .Articles-hero-side .trend-card .cover-frame { aspect-ratio: 16 / 10 !important; height: auto; }
+  .trend-card .ov-title { font-size: 17px; line-height: 1.28; }
+}
+
+/* ================= Phone: featured card shows the whole picture + only the title ================= */
+@media (max-width: 720px) {
+  /* 16:9 frame so the picture is not cropped */
+  .hero-center .ov-card .cover-frame,
+  .ov-large .cover-frame { aspect-ratio: 16 / 9 !important; min-height: 0 !important; }
+  /* no excerpt on the picture */
+  .ov-large .ov-excerpt { display: none; }
+  .ov-large .ov-tags { display: flex; margin-bottom: 6px; }
+  /* on the picture: only the category and the title (no date, no author) */
+  .ov-card .ov-date,
+  .ov-card .ov-author { display: none !important; }
+  .ov-large .ov-content,
+  .hero-center .ov-large .ov-content { padding: 10px 14px 12px; padding-right: 56px; }
+  .ov-large .ov-title,
+  .hero-center .ov-large .ov-title {
+    font-size: 17px;
+    line-height: 1.25;
+    margin: 0;
+    -webkit-line-clamp: 2;
+  }
+  /* soft fade only at the very bottom, so the picture stays clear */
+  .ov-large .ov-shade { background: linear-gradient(to top, rgba(0,0,0,0.78) 0%, rgba(0,0,0,0.35) 28%, rgba(0,0,0,0) 50%); }
+}
+
+/* ================= Navbar: "Articles" and "Write for us" buttons are exactly the same size ================= */
+.nav-links .nav-Articles-btn,
+.nav-links > a.btn[href="/write"] {
+  box-sizing: border-box;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 114px;
+  height: 34px;
+  padding: 0 10px !important;
+  font-size: 14px !important;
+  line-height: 1;
+  white-space: nowrap;
+}

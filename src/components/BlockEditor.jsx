@@ -2610,6 +2610,9 @@ export default function BlockEditor({ blocks, onChange, tldr, onTldrChange, rest
         }}
       >
         {uploading ? 'Uploading...' : 'Drag & drop images here to add them anywhere in the post'}
+        <div style={{ marginTop: 6, fontSize: 12 }}>
+          Best width: 1200 to 1600 px &middot; JPG, PNG or WEBP &middot; ideally under 500 KB (hard limit 10 MB)
+        </div>
         <div style={{ marginTop: 10 }}>
           <button
             type="button"

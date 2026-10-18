@@ -656,6 +656,10 @@ export default function WriteArticle() {
                 <span style={{ fontSize: 12, color: 'var(--color-ink-soft)' }}>Maximum {MAX_COVERS} images</span>
               )}
             </div>
+            <p className="cover-hint">
+              <strong>Best size: 1600 x 900 px (16:9)</strong> &middot; JPG, PNG or WEBP &middot; ideally under
+              500 KB (hard limit 10 MB). Other shapes are not cropped, they are fitted inside the frame.
+            </p>
 
             {coverImages.length > 0 && (
               <details className="img-seo">
